@@ -1,4 +1,5 @@
 #board {
+    float: left;
     display: grid;
     grid-template-columns: repeat(10, 60px);
     grid-template-rows: repeat(10, 60px);

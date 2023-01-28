@@ -7,6 +7,21 @@
     border-color: black;
 }
 
+.tile .game_piece {
+    background-repeat: "no-repeat";
+    background-size: "59px"; 
+    width: "59px";
+    height: "59px"
+}
+
+.tile .game_piece:hover {
+    cursor: grab;
+}
+.tile .game_piece:active {
+    cursor: grabbing;
+}
+
+
 .pieces-img {
     display: grid;
     place-content: center;
@@ -14,3 +29,4 @@
     height: 60px;
 
 }
+

@@ -9,6 +9,15 @@ export default class Piece {
         this.y = y;
     }
 
+    setPosition (x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    getImage () {
+        return this.img;
+    }
+
     attack (rank_adv) {
         
         //flag captured
