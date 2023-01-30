@@ -8,11 +8,13 @@
 }
 
 .tile .game_piece {
+    position: absolute;
     background-repeat: "no-repeat";
     background-size: "59px"; 
     width: "59px";
     height: "59px"
 }
+
 
 .tile .game_piece:hover {
     cursor: grab;
@@ -30,3 +32,6 @@
 
 }
 
+#red-0-1 {
+    position: absolute;
+}

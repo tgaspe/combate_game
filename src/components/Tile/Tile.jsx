@@ -2,18 +2,74 @@ import React from "react";
 import "./Tile.css";
 import Piece from "../Piece/Piece.js";
 
+
 export default class Tile extends React.Component {
 
     constructor (props) {
         super(props);
         this.state = {
+            index: this.props.key,
+            id: this.props.id,
             tile_type: "game_piece",
             piece: null,
             position: this.props.position,
             image: this.props.image,
             x: this.props.x,
-            y: this.props.y
+            y: this.props.y,
+            //Drag & Drop
+            activePiece: null,
+            diffX: 0,
+            diffY: 0,
+            dragging: false,
+            styles: {}
         };
+
+        this.dragStart = this.dragStart.bind(this);
+        this._dragging = this._dragging.bind(this);
+        this.dragEnd = this.dragEnd.bind(this);
+    }
+
+
+    dragStart (e) {
+        
+        const element = e.target;
+        console.log(e.target);
+
+        this.setState({
+            activePiece: element,
+            diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
+            diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
+            dragging: true
+        });
+
+        //element.style.position = "absolute";
+        //element.style.left = `${this.state.diffX}px`;
+        //element.style.top = `${this.state.diffY}px`;
+
+    }
+
+    _dragging (e) {
+
+        //const element = e.target;
+        //console.log(e.target);
+
+        if (this.state.activePiece) {
+            
+            var left = e.screenX - this.state.diffX;
+            var top = e.screenY - this.state.diffY;
+            
+            this.state.activePiece.style.left = `${left}px`;
+            this.state.activePiece.style.top = `${top}px`;
+        
+        }
+        
+    }
+
+    dragEnd () {
+        this.setState({
+            activePiece: null,
+            dragging: false,
+        })
     }
 
     render () {
@@ -53,6 +109,7 @@ export default class Tile extends React.Component {
             this.state.tile_type = "lake";
         }
 
+        //Style for class
         const piece_style = {
             background: `url(${this.state.image})`,
             backgroundRepeat: "no-repeat", 
@@ -62,8 +119,14 @@ export default class Tile extends React.Component {
 
         }
 
-        return (<div className="tile" >
-            {this.state.image !== null && <div className={this.state.tile_type} style={piece_style}>{this.state.x},{this.state.y}</div>}
+        //let index = this.state.index;
+    
+        return (
+        
+        <div className="tile" >
+            {this.state.image !== null && 
+            <div style={this.state.styles} onMouseDown={this.dragStart} onMouseMove={this._dragging} onMouseUp={this.dragEnd} id={this.state.id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
+            }
         </div> );
         //{background: `url(${this.state.image})`, backgroundRepeat: "no-repeat", backgroundSize: "59px", width: "59px", height: "59px"}
     }

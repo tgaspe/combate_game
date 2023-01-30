@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import Tile from "../Tile/Tile";
 import "./Board.css";
 import Piece from "../Piece/Piece.js";
@@ -21,77 +21,111 @@ for (var rank = 0; rank < 12; rank++) {
     const blue_piece = new Piece("blue", rank, img_pieces[rank], null, null);
     
     if (rank == 0) {
+        red_piece.setId(1);
+        blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
     } else if (rank == 1) {
+        red_piece.setId(1);
+        blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
     } else if (rank == 2) {
         for (var i = 0; i < 8; i++) {
+            red_piece.setId(i + 1);
+            blue_piece.setId(i + 1);
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
     } else if (rank == 3) {
         for (var i = 0; i < 5; i++) {
+            red_piece.setId(i + 1);
+            blue_piece.setId(i + 1);
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
     } else if (rank => 4 && rank <= 6) {
         for (var i = 0; i < 4; i++) {
+            red_piece.setId(i + 1);
+            blue_piece.setId(i + 1);
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
     } else if (rank == 7) {
         for (var i = 0; i < 3; i++) {
+            red_piece.setId(i + 1);
+            blue_piece.setId(i + 1);
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
     } else if (rank == 8) {
         for (var i = 0; i < 2; i++) {
+            red_piece.setId(i + 1);
+            blue_piece.setId(i + 1);
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
     } else if (rank == 9) {
+        red_piece.setId(1);
+        blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
     } else if (rank == 10) {
+        red_piece.setId(1);
+        blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
     } else if (rank == 11) {
         for (var i = 0; i < 6; i++) {
+            red_piece.setId(i + 1);
+            blue_piece.setId(i + 1);
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
     }
 }
 
-function grabPiece (e) {
-    document.addEventListener()
-    console.log(e);
-}
+//function grabPiece (e) {
+//    document.addEventListener()
+//    console.log(e);
+//}
+
+//onDragStart
+//onDragOver
+//onDrop
 
 
 export default function Board() {
 
-    let board = [];
+    const board = [];
 
+    let p = pieces[0];
+
+    let index = 0;
     for (let i = 0; i < horixontalAxis.length; i++) {
         for (let j = 0; j < verticalAxis.length; j++) {
             let position = horixontalAxis[i].toString + "," + verticalAxis[j];
+            
             let x = j;
             let y = i;
 
-            let img = "./assets/images/enemy_icon.png";
-            //let img = null;
-
-            //let p = pieces[0];
-            //p.setPosition(x, y);
-            //p.getImage();
+            //let img = "./assets/images/enemy_icon.png";
+            let img = null;
+            let id = null;
             
-            board.push(<Tile pos={position} image={img} x={x} y={y} />);
+            if (j === 0 && i === 0) {
+                p.setPosition(x, y);
+                img = p.getImage();
+                id = p.getId();
+            }
+            
+            
+            board.push(<Tile key={index} pos={position} image={img} x={x} y={y} id={id}/>);
+
+            index++;
         }
     }
 
-    return (<div id="board" onMouseDown={ e => grabPiece()}>{board}</div>);
+    return (<div id="board">{board}</div>);
 
 }
