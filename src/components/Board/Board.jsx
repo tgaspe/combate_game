@@ -85,107 +85,121 @@ for (var rank = 0; rank < 12; rank++) {
     }
 }
 
-//function grabPiece (e) {
-//    document.addEventListener()
-//    console.log(e);
-//}
 
-//onDragStart
-//onDragOver
-//onDrop
-
-let elementToDrag = null;
-
-function dragStart (e) {
-    
-    elementToDrag = e.target;
-    console.log(elementToDrag);
-
-    if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
-
-        let pos = elementToDrag.parentNode.id.slice(2);
-        console.log("pos->" + pos);
-        
-        const X = e.clientX -30;
-        const Y = e.clientY -30;
-
-        elementToDrag.style.left = `${X}px`;
-        elementToDrag.style.top = `${Y}px`;
-
-        //light adjecent tiles
-        // edge cases
-        if (parseInt(pos[0]) === 0) {
-            if (parseInt(pos[1]) === 0) {        // up left corner
-                //light tile 01 and 10
-                const tile_d = document.getElementById("id01");
-                console.log(tile_d);
-                tile_d.style.backgroundColor = '#1fd137';
-                const tile_r = document.getElementById("id10");
-                tile_r.style.backgroundColor = '#1fd137';
-
-            } else if (parseInt(pos[1]) === 9) { //down left corner
-                //light tile 08 and 19
-            } else {
-                //light up down right
-            }
-        } else if (parseInt(pos[0]) === 9) { 
-            if (parseInt(pos[1]) === 0) {        //up right corner
-                //light tile 91 and 80
-            } else if (parseInt(pos[1]) === 9) { //down right corner
-                //light tile 98 and 89
-            } else {
-                //light up down left
-            }
-        } else if (parseInt(pos[1]) === 0) { 
-            //light down left right
-        } else if (parseInt(pos[1]) === 9) { 
-            //light up left right
-        } else {
-            //light all 4 directions
-        }
-        
-        //*/
-    }
-
-
-}
-
-
-
-function _dragging (e) {
-
-    //elementToDrag = e.target;
-    //console.log(elementToDrag);
-
-    if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
-        
-        const X = e.clientX -30;
-        const Y = e.clientY -30;
-
-        elementToDrag.style.left = `${X}px`;
-        elementToDrag.style.top = `${Y}px`;
-    }
-
-}
-
-function dragEnd (e) {
-    
-    if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
-        elementToDrag = null;
-    }
-}
 
 export default function Board() {
 
+    const boardRef = useRef(null);
     const board = [];
+
+    let elementToDrag = null;
+    let tile_u, tile_d, tile_l, tile_r = null;
+
+    // Move piece functions
+    function dragStart (e) {
+        
+        elementToDrag = e.target;
+        console.log(elementToDrag);
+
+        if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
+
+            let pos = elementToDrag.parentNode.id.slice(2);
+            console.log("pos->" + pos);
+            
+            const X = e.clientX -30;
+            const Y = e.clientY -30;
+
+            elementToDrag.style.left = `${X}px`;
+            elementToDrag.style.top = `${Y}px`;
+
+            //light adjecent tiles
+            // edge cases
+            if (parseInt(pos[0]) === 0) {
+                if (parseInt(pos[1]) === 0) {        // up left corner
+                    //light tile 01 and 10
+                    tile_d = document.getElementById("id01");
+                    console.log(tile_d);
+                    tile_d.style.backgroundColor = '#1fd137';
+                    tile_r = document.getElementById("id10");
+                    tile_r.style.backgroundColor = '#1fd137';
+
+                } else if (parseInt(pos[1]) === 9) { //down left corner
+                    //light tile 08 and 19
+                } else {
+                    //light up down right
+                }
+            } else if (parseInt(pos[0]) === 9) { 
+                if (parseInt(pos[1]) === 0) {        //up right corner
+                    //light tile 91 and 80
+                } else if (parseInt(pos[1]) === 9) { //down right corner
+                    //light tile 98 and 89
+                } else {
+                    //light up down left
+                }
+            } else if (parseInt(pos[1]) === 0) { 
+                //light down left right
+            } else if (parseInt(pos[1]) === 9) { 
+                //light up left right
+            } else {
+                //light all 4 directions
+            }
+            //*/
+        }
+    }
+    function _dragging (e) {
+
+        const board = boardRef.current;
+    
+        if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
+            const minX = board.offsetLeft;
+            const minY = board.offsetTop;
+            const X = e.clientX -30;
+            const Y = e.clientY -30;
+            
+            //Keeping piece inside the board
+            if (X < minX) {
+                elementToDrag.style.left = `${minX}px`;
+            } else {
+                elementToDrag.style.left = `${X}px`;
+            }
+
+            if (Y < minY) {
+                elementToDrag.style.top = `${minY}px`;
+            } else {
+                elementToDrag.style.top = `${Y}px`;
+            }
+            
+            
+    
+    
+            if (e.target === tile_u) {
+                console.log("over tile u");
+            } else if (e.target === tile_d) {
+                console.log("over tile d");
+            } else if (e.target === tile_l) {
+                console.log("over tile l");
+            } else if (e.target === tile_r) {
+                console.log("over tile r");
+            } else {
+                console.log(e.target);
+            }
+        }
+    
+    }
+    function dragEnd (e) {
+        if (elementToDrag) {
+            elementToDrag = null;
+        }
+    }
+
 
     let p = pieces[0];
 
+    //Creatin Board
     let index = 0;
     for (let i = 0; i < horixontalAxis.length; i++) {
         for (let j = 0; j < verticalAxis.length; j++) {
             let position =  "id" + j + i;
-            
             let x = j;
             let y = i;
 
@@ -198,10 +212,8 @@ export default function Board() {
                 img = p.getImage();
                 id = p.getId();
             }
-            
-            
-            board.push(<Tile key={index} pos={position} image={img} x={x} y={y} piece_id={id}/>);
 
+            board.push(<Tile key={index} pos={position} image={img} x={x} y={y} piece_id={id}/>);
             index++;
         }
     }
@@ -210,6 +222,7 @@ export default function Board() {
         onMouseDown={e => dragStart(e)} 
         onMouseMove={e => _dragging(e)}
         onMouseUp={e => dragEnd(e)}
+        ref={boardRef}
         >{board}</div>);
 
 }
