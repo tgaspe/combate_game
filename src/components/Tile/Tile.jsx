@@ -53,6 +53,8 @@ export default class Tile extends React.Component {
         //const element = e.target;
         //console.log(e.target);
 
+
+
         if (this.state.activePiece) {
             
             var left = e.screenX - this.state.diffX;
