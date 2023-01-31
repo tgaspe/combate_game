@@ -9,27 +9,30 @@ export default class Tile extends React.Component {
         super(props);
         this.state = {
             index: this.props.key,
-            id: this.props.id,
+            piece_id: this.props.piece_id,
             tile_type: "game_piece",
             piece: null,
-            position: this.props.position,
+            position: this.props.pos,
             image: this.props.image,
             x: this.props.x,
             y: this.props.y,
             //Drag & Drop
+            /*
             activePiece: null,
             diffX: 0,
             diffY: 0,
             dragging: false,
             styles: {}
+            */
         };
-
+        /*
         this.dragStart = this.dragStart.bind(this);
         this._dragging = this._dragging.bind(this);
         this.dragEnd = this.dragEnd.bind(this);
+        */
     }
 
-
+    /*
     dragStart (e) {
         
         const element = e.target;
@@ -53,8 +56,6 @@ export default class Tile extends React.Component {
         //const element = e.target;
         //console.log(e.target);
 
-
-
         if (this.state.activePiece) {
             
             var left = e.screenX - this.state.diffX;
@@ -73,6 +74,7 @@ export default class Tile extends React.Component {
             dragging: false,
         })
     }
+    */
 
     render () {
         
@@ -116,18 +118,18 @@ export default class Tile extends React.Component {
             background: `url(${this.state.image})`,
             backgroundRepeat: "no-repeat", 
             backgroundSize: "59px", 
-            width: "59px", height: 
-            "59px"
+            width: "59px", 
+            height: "59px"
 
         }
 
         //let index = this.state.index;
     
         return (
-        
-        <div className="tile" >
+        //onMouseDown={this.dragStart} onMouseMove={this._dragging} onMouseUp={this.dragEnd}
+        <div id={this.state.position} className="tile">
             {this.state.image !== null && 
-            <div style={this.state.styles} onMouseDown={this.dragStart} onMouseMove={this._dragging} onMouseUp={this.dragEnd} id={this.state.id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
+            <div style={this.state.styles}  id={this.state.piece_id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
             }
         </div> );
         //{background: `url(${this.state.image})`, backgroundRepeat: "no-repeat", backgroundSize: "59px", width: "59px", height: "59px"}

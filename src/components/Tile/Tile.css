@@ -2,9 +2,9 @@
     width: 60px;
     height: 60px;
     margin: 0;
-    border-style: solid;
+    border-style: dashed;
     border-width: 1px;
-    border-color: black;
+    border-color: rgb(29, 29, 29);
 }
 
 .tile .game_piece {
@@ -34,4 +34,8 @@
 
 #red-0-1 {
     position: absolute;
+}
+
+#id00 {
+    background-color: rgb(171, 21, 134);
 }
