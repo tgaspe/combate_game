@@ -23,12 +23,16 @@ export default class Piece {
         this.id = this.id + "-" +  id;
     }
 
-    getId() {
+    getId () {
         return this.id;
     }
 
     getImage () {
         return this.img;
+    }
+
+    print () {
+        console.log(this.team +" "+ this.rank +" "+ this.img +" "+ this.x +" "+ this.y)
     }
 
     attack (rank_adv) {

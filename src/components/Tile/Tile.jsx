@@ -119,7 +119,7 @@ export default class Tile extends React.Component {
             backgroundRepeat: "no-repeat", 
             backgroundSize: "59px", 
             width: "59px", 
-            height: "59px"
+            height: "59px",
 
         }
 
@@ -129,7 +129,7 @@ export default class Tile extends React.Component {
         //onMouseDown={this.dragStart} onMouseMove={this._dragging} onMouseUp={this.dragEnd}
         <div id={this.state.position} className="tile">
             {this.state.image !== null && 
-            <div style={this.state.styles}  id={this.state.piece_id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
+            <div id={this.state.piece_id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
             }
         </div> );
         //{background: `url(${this.state.image})`, backgroundRepeat: "no-repeat", backgroundSize: "59px", width: "59px", height: "59px"}

@@ -27,15 +27,11 @@
 .pieces-img {
     display: grid;
     place-content: center;
-    width: 60px;
-    height: 60px;
+    width: 59px;
+    height: 59px;
 
 }
 
 #red-0-1 {
     position: absolute;
-}
-
-#id00 {
-    background-color: rgb(171, 21, 134);
 }
