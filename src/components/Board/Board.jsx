@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Tile from "../Tile/Tile";
 import "./Board.css";
 import Piece from "../Piece/Piece.js";
+import Rules from "../Rules/Rules.js";
 
 //Board Axis
 const horixontalAxis = [1,2,3,4,5,6,7,8,9,10].reverse();
@@ -135,7 +136,9 @@ export default function Board() {
 
     let elementToDrag = null;
     let current_tile, tile_u, tile_d, tile_l, tile_r = null;
+    let pos;
     const [boardPieces, setBoardPieces] = useState(pieces);
+    const rules = new Rules;
 
     // Move piece functions
     function dragStart (e) {
@@ -156,7 +159,7 @@ export default function Board() {
             elementToDrag.style.top = `${Y}px`;
 
             //Light adjecent tiles
-            let pos = current_tile.id.slice(2);
+            pos = current_tile.id.slice(2);
             if (parseInt(pos[0]) === 0) {
                 if (parseInt(pos[1]) === 0) {        // up left corner
                     //light tile 01 and 10
@@ -270,6 +273,10 @@ export default function Board() {
 
         if (elementToDrag) {
 
+            const id = elementToDrag.id;
+            const team = id.slice(0, 3);
+            const rank = id.slice(id.indexOf("-") + 1, id.lastIndexOf("-"));
+
             //Set tile colors back to normal
             if (current_tile) {current_tile.style.backgroundColor = null;}
             if (tile_u) {tile_u.style.backgroundColor = null;}
@@ -281,24 +288,78 @@ export default function Board() {
             const x = Math.floor((e.clientX - boardRef.current.offsetLeft)/60);
             const y = Math.floor((e.clientY - boardRef.current.offsetTop)/60);
             
-            console.log("got here!!!");
-            console.log(x);
-            console.log(y);
 
             // if x and y within movement range do all the rest
             // if movement allowed i.e. no lake tile or team piece
 
             const new_parent_tile = document.getElementById("id"+x+y);
+            
 
-            if (new_parent_tile.childElementCount == 0 ){
-                new_parent_tile.appendChild(elementToDrag);
+            //Empty tile
+            if (new_parent_tile.childElementCount == 0) {
+
+                if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, parseInt(rank)) === true) {
+                    new_parent_tile.appendChild(elementToDrag);
+                    //Set piece position in the middle of selected tile
+                    elementToDrag.style.left = `${x*60 + boardRef.current.offsetLeft}px`;
+                    elementToDrag.style.top = `${y*60 + boardRef.current.offsetTop}px`;
+                    console.log("Can go here!");
+
+                } else {
+                    console.log("cannot go here!");
+                    elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
+                    elementToDrag.style.top = `${parseInt(pos[1])*60 + boardRef.current.offsetTop}px`;
+                }
+            //Not empty tile    
             } else {
-                //if child node of new parent tile enemy tile -> call attack 
-            }
+
+                if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, team) === true) {// Not empty
+                
+                    const parent_child = new_parent_tile.lastElementChild;
+                    const id_adv = parent_child.id;
+                    const team_adv = id_adv.slice(0, 3);
+                    const rank_adv = id_adv.slice(id_adv.indexOf("-") + 1, id_adv.lastIndexOf("-"));
+                    
+                    //lake tile or ally tile
+                    if (team_adv === team || parent_child.className === "lake") {
+                        //Invalid move return x, y to previous place
+                        console.log("cannot go here!");
+                        elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
+                        elementToDrag.style.top = `${parseInt(pos[1])*60 + boardRef.current.offsetTop}px`;
+                    } else { //Enemy tile 
+                        console.log("attack command!");
+                        
+                        let attack_result = rules.attack(parseInt(rank), parseInt(rank_adv));
+
+                        if (attack_result === 0) {
+                            //tie
+                            elementToDrag.remove();
+                            parent_child.remove();
+                        } else if (attack_result === 1) {
+                            //won
+                            elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
+                            elementToDrag.style.top = `${parseInt(pos[1])*60 + boardRef.current.offsetTop}px`;
+                            parent_child.remove();
+                        } else {
+                            //lost
+                            elementToDrag.remove();
+                        }
+
+
+                    }
+                    //if child node of new parent tile enemy tile -> call attack 
+                } else {
+                    console.log("connot go here!");
+                    elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
+                    elementToDrag.style.top = `${parseInt(pos[1])*60 + boardRef.current.offsetTop}px`;
+                }
+            }  
+
+            
             
             //Set piece position in the middle of selected tile
-            elementToDrag.style.left = `${x*60 + boardRef.current.offsetLeft}px`;
-            elementToDrag.style.top = `${y*60 + boardRef.current.offsetTop}px`;
+            // elementToDrag.style.left = `${x*60 + boardRef.current.offsetLeft}px`;
+            // elementToDrag.style.top = `${y*60 + boardRef.current.offsetTop}px`;
 
             
             elementToDrag = null;

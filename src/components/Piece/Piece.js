@@ -9,6 +9,9 @@ export default class Piece {
         this.y = y;
         this.id = team + "-" + rank; // "team-rank-number"
     }
+    getTeam () {
+        return this.team;
+    }
 
     setPosition (x, y) {
         this.x = x;

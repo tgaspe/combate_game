@@ -16,65 +16,8 @@ export default class Tile extends React.Component {
             image: this.props.image,
             x: this.props.x,
             y: this.props.y,
-            //Drag & Drop
-            /*
-            activePiece: null,
-            diffX: 0,
-            diffY: 0,
-            dragging: false,
-            styles: {}
-            */
         };
-        /*
-        this.dragStart = this.dragStart.bind(this);
-        this._dragging = this._dragging.bind(this);
-        this.dragEnd = this.dragEnd.bind(this);
-        */
     }
-
-    /*
-    dragStart (e) {
-        
-        const element = e.target;
-        console.log(e.target);
-
-        this.setState({
-            activePiece: element,
-            diffX: e.screenX - e.currentTarget.getBoundingClientRect().left,
-            diffY: e.screenY - e.currentTarget.getBoundingClientRect().top,
-            dragging: true
-        });
-
-        //element.style.position = "absolute";
-        //element.style.left = `${this.state.diffX}px`;
-        //element.style.top = `${this.state.diffY}px`;
-
-    }
-
-    _dragging (e) {
-
-        //const element = e.target;
-        //console.log(e.target);
-
-        if (this.state.activePiece) {
-            
-            var left = e.screenX - this.state.diffX;
-            var top = e.screenY - this.state.diffY;
-            
-            this.state.activePiece.style.left = `${left}px`;
-            this.state.activePiece.style.top = `${top}px`;
-        
-        }
-        
-    }
-
-    dragEnd () {
-        this.setState({
-            activePiece: null,
-            dragging: false,
-        })
-    }
-    */
 
     render () {
         
