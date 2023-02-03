@@ -128,8 +128,28 @@ for (var rank = 0; rank < 12; rank++) {
     }
 }
 
+
+
+
+
+
+
+            //Todo list: 
+            // - if player move but does not want to attack: button to attack or end turn???
+            // - Players turns 
+            // - Show pieces after attacking - 
+            // - hide adversary pieces
+            // - implement online 
+            // - adjust light tiles when player moves
+            // - pieces deployement screen with timer and start game button
+            // - game over screen showing all pieces and highlightin flag
+
+
+
+
+
 //Board Function
-export default function Board() {
+export default function Board(props) {
 
     const boardRef = useRef(null);
     const board = [];
@@ -137,7 +157,7 @@ export default function Board() {
     let elementToDrag = null;
     let current_tile, tile_u, tile_d, tile_l, tile_r = null;
     let pos;
-    const [boardPieces, setBoardPieces] = useState(pieces);
+    
     const rules = new Rules;
 
     // Move piece functions
@@ -241,11 +261,14 @@ export default function Board() {
         const board = boardRef.current;
     
         if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
+            
+            //Board dimensions
             const minX = board.offsetLeft;
             const minY = board.offsetTop;
             const maxX = board.offsetLeft + 540;
             const maxY = board.offsetTop + 540;
-
+            
+            //Mouse position
             const X = e.clientX -30;
             const Y = e.clientY -30;
             
@@ -289,21 +312,19 @@ export default function Board() {
             const y = Math.floor((e.clientY - boardRef.current.offsetTop)/60);
             
 
-            // if x and y within movement range do all the rest
-            // if movement allowed i.e. no lake tile or team piece
-
+            // --- Rules for moving and attacking ---
             const new_parent_tile = document.getElementById("id"+x+y);
             
-
             //Empty tile
-            if (new_parent_tile.childElementCount == 0) {
+            if (new_parent_tile.childElementCount === 0) {
 
                 if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, parseInt(rank)) === true) {
+
                     new_parent_tile.appendChild(elementToDrag);
                     //Set piece position in the middle of selected tile
                     elementToDrag.style.left = `${x*60 + boardRef.current.offsetLeft}px`;
                     elementToDrag.style.top = `${y*60 + boardRef.current.offsetTop}px`;
-                    console.log("Can go here!");
+                    console.log("Can go here! empty tile.");
 
                 } else {
                     console.log("cannot go here!");
@@ -323,7 +344,7 @@ export default function Board() {
                     //lake tile or ally tile
                     if (team_adv === team || parent_child.className === "lake") {
                         //Invalid move return x, y to previous place
-                        console.log("cannot go here!");
+                        console.log("cannot go here! ally or lake there!");
                         elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
                         elementToDrag.style.top = `${parseInt(pos[1])*60 + boardRef.current.offsetTop}px`;
                     } else { //Enemy tile 
@@ -332,17 +353,29 @@ export default function Board() {
                         let attack_result = rules.attack(parseInt(rank), parseInt(rank_adv));
 
                         if (attack_result === 0) {
-                            //tie
+                            //Tie
                             elementToDrag.remove();
                             parent_child.remove();
                         } else if (attack_result === 1) {
-                            //won
+                            //Won
                             elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
                             elementToDrag.style.top = `${parseInt(pos[1])*60 + boardRef.current.offsetTop}px`;
                             parent_child.remove();
+                            
+                            //TODO: Show to the adversary your piece
+                            setTimeout(() => {
+                                console.log('Show your piece to the adv!')
+                              }, 2000);
+                            
+
                         } else {
-                            //lost
+                            //Lost
                             elementToDrag.remove();
+
+                            //TODO: Show adversary piece to you
+                            setTimeout(() => {
+                                console.log('Adv show his piece to you!')
+                              }, 2000);
                         }
 
 
@@ -367,6 +400,13 @@ export default function Board() {
     }
 
 
+    function attack (e) {
+
+        //implement attack here  
+
+    }
+
+
     //Creating Board
     let index = 0;
     for (let i = 0; i < horixontalAxis.length; i++) {
@@ -380,7 +420,7 @@ export default function Board() {
             let id = null;
             
             //Putting pieces on board
-            boardPieces.forEach((p) => {
+            pieces.forEach((p) => {
                 let pos = p.getPosition();
                 if (pos[0] == j && pos[1] == i) {
                     img = p.getImage();
@@ -393,11 +433,16 @@ export default function Board() {
         }
     }
 
-    return (<div id="board" 
+    return (
+        <div 
+        id="board" 
         onMouseDown={e => dragStart(e)} 
         onMouseMove={e => _dragging(e)}
         onMouseUp={e => dragEnd(e)}
+        onClick={e => attack(e)}
         ref={boardRef}
-        >{board}</div>);
+        >
+            {board}
+        </div>);
 
 }

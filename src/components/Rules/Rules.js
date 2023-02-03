@@ -1,11 +1,32 @@
 export default class Rules {
 
-    isValidMove (px, py, x, y, rank) {
+    constructor() {
+        this.moves = 0;
+        this.turn = 0;
+    }
+
+    turns () {
         
+        if (this.moves >= 1 ) {
+            console.log("your turn is over");
+            this.moves = 0;
+            this.moves ++;
+            //this.turn = false;
+            return 0;
+        } else {
+            return 1;
+        }
+
+        
+    }
+
+    isValidMove (px, py, x, y, rank) {
+
         console.log("\nreferee is checking move:");
 
         //Prevent bombs from moving
         if (rank === 11) {
+            console.log("Bombs do not move!")
             return false;
         }
 
@@ -123,8 +144,15 @@ export default class Rules {
             return 0;
         } else if (rank > rank_adv) {
             console.log("you win!");
+            if (rank_adv === 0) {
+                console.log("you won the GAME!");
+            }
             return 1;
         } else {
+            if (rank === 3 && rank_adv === 11) {
+                console.log("Bomb disarmed!");
+                return 1;
+            }
             console.log("you die!");
             return -1;
         }

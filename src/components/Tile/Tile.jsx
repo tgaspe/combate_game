@@ -1,6 +1,5 @@
 import React from "react";
 import "./Tile.css";
-import Piece from "../Piece/Piece.js";
 
 
 export default class Tile extends React.Component {
@@ -8,7 +7,7 @@ export default class Tile extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            index: this.props.key,
+            index: this.key,
             piece_id: this.props.piece_id,
             tile_type: "game_piece",
             piece: null,
@@ -66,18 +65,11 @@ export default class Tile extends React.Component {
 
         }
 
-        //let index = this.state.index;
-    
         return (
-        //onMouseDown={this.dragStart} onMouseMove={this._dragging} onMouseUp={this.dragEnd}
         <div id={this.state.position} className="tile">
             {this.state.image !== null && 
             <div id={this.state.piece_id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
             }
-        </div> );
-        //{background: `url(${this.state.image})`, backgroundRepeat: "no-repeat", backgroundSize: "59px", width: "59px", height: "59px"}
-    }
-    
+        </div>);
+    }  
 }
-
-//
