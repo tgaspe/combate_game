@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import Tile from "../Tile/Tile";
-import "./Board.css";
-import Piece from "../Piece/Piece.js";
-import Rules from "../Rules/Rules.js";
+//import io from 'socket.io-client';
+import Tile from "./Tile";
+import "./styles/Board.css";
+import Piece from "./Piece.js";
+//import Rules from "./Rules.js";
+
+//Socket io
+//const socket = io();
 
 //Board Axis
 const horixontalAxis = [1,2,3,4,5,6,7,8,9,10].reverse();
@@ -18,21 +22,21 @@ const img_pieces = ["./assets/images/flag.png", "./assets/images/spie.png","./as
 //Initializing pieces array
 for (var rank = 0; rank < 12; rank++) {
     
-    if (rank == 0) { //Flag
+    if (rank === 0) { //Flag
         const red_piece = new Piece("red", rank, img_pieces[rank], 0, 0);
         const blue_piece = new Piece("blue", rank, img_pieces[rank], 0, 9);
         red_piece.setId(1);
         blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
-    } else if (rank == 1) { //Spie
+    } else if (rank === 1) { //Spie
         const red_piece = new Piece("red", rank, img_pieces[rank], 1, 0);
         const blue_piece = new Piece("blue", rank, img_pieces[rank], 1, 9);
         red_piece.setId(1);
         blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
-    } else if (rank == 2) { //Soldier
+    } else if (rank === 2) { //Soldier
         for (var i = 0; i < 8; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], 2+i, 0);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], 2+i, 9);
@@ -41,7 +45,7 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 3) { //Corporal
+    } else if (rank === 3) { //Corporal
         for (var i = 0; i < 5; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], i, 1);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], i, 8);
@@ -50,7 +54,7 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 4 ) { //Sargent
+    } else if (rank === 4 ) { //Sargent
         for (var i = 0; i < 4; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], 5 + i, 1);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], 5 + i, 8);
@@ -59,11 +63,11 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 5 ) { //BlueTenent
+    } else if (rank === 5 ) { //BlueTenent
         for (var i = 0; i < 4; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], null, null);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], null, null);
-            if (i == 0) {
+            if (i === 0) {
                 red_piece.setPosition(9, 1);
                 blue_piece.setPosition(9, 8);
             } else {
@@ -75,7 +79,7 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 6 ) { //Captain
+    } else if (rank === 6 ) { //Captain
         for (var i = 0; i < 4; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], i+3, 2);
             const blue_piece = new Piece("blue", rank, img_pieces[rank],  i+3, 7);
@@ -84,7 +88,7 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 7) { //Major
+    } else if (rank === 7) { //Major
         for (var i = 0; i < 3; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], 7+i, 2);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], 7+i, 7);
@@ -93,7 +97,7 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 8) { //Colonel
+    } else if (rank === 8) { //Colonel
         for (var i = 0; i < 2; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], i, 3);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], i, 6);
@@ -102,21 +106,21 @@ for (var rank = 0; rank < 12; rank++) {
             pieces.push(red_piece);
             pieces.push(blue_piece);
         }
-    } else if (rank == 9) { //General
+    } else if (rank === 9) { //General
         const red_piece = new Piece("red", rank, img_pieces[rank], 2, 3);
         const blue_piece = new Piece("blue", rank, img_pieces[rank], 2, 6);
         red_piece.setId(1);
         blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
-    } else if (rank == 10) { //5 Star General
+    } else if (rank === 10) { //5 Star General
         const red_piece = new Piece("red", rank, img_pieces[rank], 3, 3);
         const blue_piece = new Piece("blue", rank, img_pieces[rank], 3, 6);
         red_piece.setId(1);
         blue_piece.setId(1);
         pieces.push(red_piece);
         pieces.push(blue_piece);
-    } else if (rank == 11) { //Bomb
+    } else if (rank === 11) { //Bomb
         for (var i = 0; i < 6; i++) {
             const red_piece = new Piece("red", rank, img_pieces[rank], 4+i, 3);
             const blue_piece = new Piece("blue", rank, img_pieces[rank], 4+i, 6);
@@ -129,44 +133,29 @@ for (var rank = 0; rank < 12; rank++) {
 }
 
 
-
-
-
-
-
-            //Todo list: 
-            // - if player move but does not want to attack: button to attack or end turn???
-            // - Players turns 
-            // - Show pieces after attacking - 
-            // - hide adversary pieces
-            // - implement online 
-            // - adjust light tiles when player moves
-            // - pieces deployement screen with timer and start game button
-            // - game over screen showing all pieces and highlightin flag
-
-
-
-
-
-//Board Function
+// Board Function
 export default function Board(props) {
 
     const boardRef = useRef(null);
-    const board = [];
+    const board_matrix = [];       //used to pass board state to server
+    //const board = [];
+    const [board, setBoard] = useState([]);
 
-    let elementToDrag = null;
-    let current_tile, tile_u, tile_d, tile_l, tile_r = null;
-    let pos;
+    // let elementToDrag = null;
+    // let current_tile, tile_u, tile_d, tile_l, tile_r = null;
+    // let pos;
     
-    const rules = new Rules;
-
-    // Move piece functions
+    // const rules = new Rules;
+/*
+    // --- Move piece functions ---
     function dragStart (e) {
         
         elementToDrag = e.target;
 
         if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
 
+            const id = elementToDrag.id;
+            const team = id.slice(0, 3);
             current_tile = elementToDrag.parentNode;
             
             //Ligth current tile yellow
@@ -182,79 +171,185 @@ export default function Board(props) {
             pos = current_tile.id.slice(2);
             if (parseInt(pos[0]) === 0) {
                 if (parseInt(pos[1]) === 0) {        // up left corner
-                    //light tile 01 and 10
+                    //light tile 01 and 10 
                     tile_d = document.getElementById("id01");
-                    tile_d.style.backgroundColor = '#1fd137';
                     tile_r = document.getElementById("id10");
-                    tile_r.style.backgroundColor = '#1fd137';
+
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_r.lastElementChild) {
+                        tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = "red";
+                    } else {
+                        tile_r.style.backgroundColor = '#1fd137';
+                    }
 
                 } else if (parseInt(pos[1]) === 9) { //down left corner
                     //light tile 08 and 19
                     tile_u = document.getElementById("id08");
-                    tile_u.style.backgroundColor = '#1fd137';
                     tile_r = document.getElementById("id19");
-                    tile_r.style.backgroundColor = '#1fd137';
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = "red";
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_r.lastElementChild) {
+                        tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                    } else {
+                        tile_r.style.backgroundColor = '#1fd137';
+                    }
                 } else {
                     //light up down right
                     console.log("ligth up down right");
                     tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-                    tile_u.style.backgroundColor = '#1fd137';
                     tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-                    tile_d.style.backgroundColor = '#1fd137';
                     tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
-                    tile_r.style.backgroundColor = '#1fd137';
+                    
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_r.lastElementChild) {
+                        tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                    } else {
+                        tile_r.style.backgroundColor = '#1fd137';
+                    }
+                
                 }
             } else if (parseInt(pos[0]) === 9) { 
                 if (parseInt(pos[1]) === 0) {        //up right corner
                     //light tile 91 and 80
                     tile_d = document.getElementById("id91");
-                    tile_d.style.backgroundColor = '#1fd137';
                     tile_l = document.getElementById("id80");
-                    tile_l.style.backgroundColor = '#1fd137';
+
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_l.lastElementChild) {
+                        tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    } else {
+                        tile_l.style.backgroundColor = '#1fd137';
+                    }
                 } else if (parseInt(pos[1]) === 9) { //down right corner
                     //light tile 98 and 89
                     tile_u = document.getElementById("id98");
-                    tile_u.style.backgroundColor = '#1fd137';
                     tile_l = document.getElementById("id89");
-                    tile_l.style.backgroundColor = '#1fd137';
+
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    } if (tile_l.lastElementChild) {
+                        tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    } else {
+                        tile_l.style.backgroundColor = '#1fd137';
+                    }
                 } else {
                     //light up down left
                     console.log("ligth up down right");
                     tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-                    tile_u.style.backgroundColor = '#1fd137';
                     tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-                    tile_d.style.backgroundColor = '#1fd137';
                     tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-                    tile_l.style.backgroundColor = '#1fd137';
+
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    } 
+                    if (tile_l.lastElementChild) {
+                        tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    } else {
+                        tile_l.style.backgroundColor = '#1fd137';
+                    }
                 }
             } else if (parseInt(pos[1]) === 0) { 
                 //light down left right
                 tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-                tile_d.style.backgroundColor = '#1fd137';
                 tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-                tile_l.style.backgroundColor = '#1fd137';
                 tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
-                tile_r.style.backgroundColor = '#1fd137';
+
+                if (tile_d.lastElementChild) {
+                    tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                } else {
+                    tile_d.style.backgroundColor = '#1fd137';
+                } 
+                if (tile_l.lastElementChild) {
+                    tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                } else {
+                    tile_l.style.backgroundColor = '#1fd137';
+                }
+                if (tile_r.lastElementChild) {
+                    tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                } else {
+                    tile_r.style.backgroundColor = '#1fd137';
+                }
             } else if (parseInt(pos[1]) === 9) { 
                 //light up left right
                 tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-                tile_u.style.backgroundColor = '#1fd137';
                 tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-                tile_l.style.backgroundColor = '#1fd137';
                 tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
-                tile_r.style.backgroundColor = '#1fd137';
+
+                if (tile_u.lastElementChild) {
+                    tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                } else {
+                    tile_u.style.backgroundColor = '#1fd137';
+                }
+                if (tile_l.lastElementChild) {
+                    tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                } else {
+                    tile_l.style.backgroundColor = '#1fd137';
+                }
+                if (tile_r.lastElementChild) {
+                    tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                } else {
+                    tile_r.style.backgroundColor = '#1fd137';
+                }
             } else {
                 //light all 4 directions
                 tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-                tile_u.style.backgroundColor = '#1fd137';
                 tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-                tile_d.style.backgroundColor = '#1fd137';
                 tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-                tile_l.style.backgroundColor = '#1fd137';
                 tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
-                tile_r.style.backgroundColor = '#1fd137';
-            }
+                
+                if (tile_u.lastElementChild) {
+                    tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                } else {
+                    tile_u.style.backgroundColor = '#1fd137';
+                }
+                if (tile_d.lastElementChild) {
+                    tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                } else {
+                    tile_d.style.backgroundColor = '#1fd137';
+                } 
+                if (tile_l.lastElementChild) {
+                    tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                } else {
+                    tile_l.style.backgroundColor = '#1fd137';
+                }
+                if (tile_r.lastElementChild) {
+                    tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                } else {
+                    tile_r.style.backgroundColor = '#1fd137';
+                }
+            } 
+            
         }
+        
     }
     function _dragging (e) {
 
@@ -315,7 +410,7 @@ export default function Board(props) {
             // --- Rules for moving and attacking ---
             const new_parent_tile = document.getElementById("id"+x+y);
             
-            //Empty tile
+             //Empty tile
             if (new_parent_tile.childElementCount === 0) {
 
                 if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, parseInt(rank)) === true) {
@@ -356,6 +451,7 @@ export default function Board(props) {
                             //Tie
                             elementToDrag.remove();
                             parent_child.remove();
+
                         } else if (attack_result === 1) {
                             //Won
                             elementToDrag.style.left = `${parseInt(pos[0])*60 + boardRef.current.offsetLeft}px`;
@@ -364,18 +460,20 @@ export default function Board(props) {
                             
                             //TODO: Show to the adversary your piece
                             setTimeout(() => {
-                                console.log('Show your piece to the adv!')
+                                console.log('Show your piece to the adv!');
                               }, 2000);
                             
 
                         } else {
+                            
                             //Lost
                             elementToDrag.remove();
 
                             //TODO: Show adversary piece to you
                             setTimeout(() => {
                                 console.log('Adv show his piece to you!')
-                              }, 2000);
+                            }, 2000);
+
                         }
 
 
@@ -388,60 +486,51 @@ export default function Board(props) {
                 }
             }  
 
-            
-            
-            //Set piece position in the middle of selected tile
-            // elementToDrag.style.left = `${x*60 + boardRef.current.offsetLeft}px`;
-            // elementToDrag.style.top = `${y*60 + boardRef.current.offsetTop}px`;
-
-            
             elementToDrag = null;
         }
     }
+*/
 
 
-    function attack (e) {
-
-        //implement attack here  
-
-    }
-
-
-    //Creating Board
+    // --- Creating Board ---
     let index = 0;
     for (let i = 0; i < horixontalAxis.length; i++) {
+
+        const row = [];
+
         for (let j = 0; j < verticalAxis.length; j++) {
+            
             let position =  "id" + j + i;
             let x = j;
             let y = i;
-
-            //let img = "./assets/images/enemy_icon.png";
             let img = null;
             let id = null;
             
             //Putting pieces on board
+            
             pieces.forEach((p) => {
                 let pos = p.getPosition();
-                if (pos[0] == j && pos[1] == i) {
+                if (pos[0] === j && pos[1] === i) {
+
+                    //p.getTeam() === "blue" ? img = p.getImage() : img = "./assets/images/enemy_icon.png";
                     img = p.getImage();
                     id = p.getId();
                 }
             });
             
+            row.push(id);
             board.push(<Tile key={index} pos={position} image={img} x={x} y={y} piece_id={id}/>);
             index++;
         }
+
+        board_matrix.push(row);
     }
 
+    // onMouseDown={e => dragStart(e)} 
+    // onMouseMove={e => _dragging(e)}
+    // onMouseUp={e => dragEnd(e)}
     return (
-        <div 
-        id="board" 
-        onMouseDown={e => dragStart(e)} 
-        onMouseMove={e => _dragging(e)}
-        onMouseUp={e => dragEnd(e)}
-        onClick={e => attack(e)}
-        ref={boardRef}
-        >
+        <div id="board" ref={boardRef}>
             {board}
         </div>);
 

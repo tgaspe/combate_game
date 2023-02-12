@@ -1,6 +1,7 @@
-import Tile from "./Tile/Tile";
-import Piece from "./Piece/Piece.js";
-
+import Tile from "./Tile";
+import Piece from "./Piece.js";
+// import Rules from "./Rules.js";
+// import Game from "./game.js";
 
 //Pieces
 const pieces = [];
@@ -122,87 +123,15 @@ for (var rank = 0; rank < 12; rank++) {
     }
 }
 
-
 export default function Holder () {
     
-    let elementToDrag, current_tile;
-    
-
-    // function dragStart1 (e) {
-        
-    //     elementToDrag = e.target;
-
-    //     if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
-
-    //         current_tile = elementToDrag.parentNode;
-            
-    //         //Ligth current tile yellow
-    //         current_tile.style.backgroundColor = "yellow";
-
-    //         //Mouse Grab
-    //         const X = e.clientX -30;
-    //         const Y = e.clientY -30;
-    //         elementToDrag.style.left = `${X}px`;
-    //         elementToDrag.style.top = `${Y}px`;
-    //     }
-    // }
-
-    // function _dragging1 (e) {
-    //     if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
-
-    //         //Mouse position
-    //         const X = e.clientX -30;
-    //         const Y = e.clientY -30;
-
-    //         elementToDrag.style.left = `${X}px`;
-    //         elementToDrag.style.top = `${Y}px`;
-
-    //     }
-    // }
-
-    // function dragEnd1 (e) {
-        
-    //     if (elementToDrag) {
-
-    //         const board = document.getElementById("board");
-    //         const id = elementToDrag.id;
-    //         const team = id.slice(0, 3);
-    //         const rank = id.slice(id.indexOf("-") + 1, id.lastIndexOf("-"));
-
-    //         //Set tile colors back to normal
-    //         if (current_tile) {current_tile.style.backgroundColor = null;} 
-
-    //         //Calculate mouse grid position
-    //         const x = Math.floor((e.clientX - board.offsetLeft)/60);
-    //         const y = Math.floor((e.clientY - board.offsetTop)/60);
-
-    //         // --- Rules for moving and attacking ---
-    //         const new_parent_tile = document.getElementById("id"+x+y);
-            
-    //         //Empty tile
-    //         if (new_parent_tile.childElementCount === 0) { 
-                
-    //             new_parent_tile.appendChild(elementToDrag);
-    //             //Set piece position in the middle of selected tile
-    //             elementToDrag.style.left = `${x*60 + board.offsetLeft}px`;
-    //             elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
-    //             console.log("Can place here!");
-    //         } else {
-    //             console.log("Cannot place here!");
-    //         }
-    //     } 
-
-    //     elementToDrag = null;
-
-    // }
-
-
     const piece_select = [];
     
+    let index = 0;
     for (let i = 0; i < 10; i++) { //rows
         for (let j= 0; j < 4; j++) {//collums
             
-            let position =  "id>" + j + i;
+            let position =  "is" + j + i;
             let x = i;
             let y = j;
             let img = null;
@@ -217,16 +146,13 @@ export default function Holder () {
                 }
             });
             
-            
-            piece_select.push(<Tile pos={position} image={img} x={x} y={y} piece_id={id}/>);
+            piece_select.push(<Tile key={index} pos={position} image={img} x={x} y={y} piece_id={id}/>);
+            index ++;
         }
     }
-    // onMouseDown={e => dragStart1(e)} 
-    //     onMouseMove={e => _dragging1(e)}
-    //     onMouseUp={e => dragEnd1(e)}
-    console.log(piece_select);
+
     return (<div 
         id='piece_holder'
-        
+
         >{piece_select}</div>);
 }

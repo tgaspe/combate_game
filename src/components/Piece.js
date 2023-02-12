@@ -13,6 +13,10 @@ export default class Piece {
         return this.team;
     }
 
+    getRank() {
+        return this.rank;
+    }
+
     setPosition (x, y) {
         this.x = x;
         this.y = y;

@@ -1,5 +1,5 @@
 import React from "react";
-import "./Tile.css";
+import "./styles/Tile.css";
 
 
 export default class Tile extends React.Component {
@@ -57,13 +57,16 @@ export default class Tile extends React.Component {
 
         //Style for class
         const piece_style = {
-            background: `url(${this.state.image})`,
+            background: `url(${this.state.image})`, 
             backgroundRepeat: "no-repeat", 
             backgroundSize: "59px", 
             width: "59px", 
             height: "59px",
 
         }
+
+        //if (oposite team) { piece_style[background] = "./assets/images/enemy_icon.png"; }
+
 
         return (
         <div id={this.state.position} className="tile">
