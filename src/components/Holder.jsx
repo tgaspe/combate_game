@@ -151,8 +151,5 @@ export default function Holder () {
         }
     }
 
-    return (<div 
-        id='piece_holder'
-
-        >{piece_select}</div>);
+    return (<div id='piece_holder'>{piece_select}</div>);
 }

@@ -1,8 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
-import App from './App';
+import Game from './Game';
+import Layout from "./pages/Layout";
+import Lobby from "./pages/Lobby";
+import Error from './pages/ErrorPage';
 import reportWebVitals from './reportWebVitals';
+import WaitingPage from './pages/WaitingPage';
+
+
+export default function App() {
+
+
+
+    return (
+      <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<Layout />}>
+            <Route index element={<Lobby />} />
+            <Route path="game" element={<Game />} />
+            <Route path="waiting-page" element={<WaitingPage />} />
+            <Route path="*" element={<Error />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    );
+}
+
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
@@ -11,3 +37,14 @@ root.render(<App />);
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+
+
+
+
+/*
+
+
+
+ReactDOM.render(<App />, document.getElementById("root"));
+*/

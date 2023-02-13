@@ -20,7 +20,7 @@ export default class Tile extends React.Component {
 
     render () {
         
-        //lake 1
+        // Lake 1
         if (this.state.x === 2 && this.state.y === 4) {
             this.state.image = "./assets/images/lake1.png";
             this.state.tile_type = "lake";
@@ -37,7 +37,7 @@ export default class Tile extends React.Component {
             this.state.image = "./assets/images/lake4.png";
             this.state.tile_type = "lake";
         }
-        //lake 2
+        // Lake 2
         if (this.state.x === 6 && this.state.y === 4) {
             this.state.image = "./assets/images/lake2_1.png";
             this.state.tile_type = "lake";
@@ -55,18 +55,14 @@ export default class Tile extends React.Component {
             this.state.tile_type = "lake";
         }
 
-        //Style for class
+        // Style for class
         const piece_style = {
             background: `url(${this.state.image})`, 
             backgroundRepeat: "no-repeat", 
             backgroundSize: "59px", 
             width: "59px", 
             height: "59px",
-
         }
-
-        //if (oposite team) { piece_style[background] = "./assets/images/enemy_icon.png"; }
-
 
         return (
         <div id={this.state.position} className="tile">

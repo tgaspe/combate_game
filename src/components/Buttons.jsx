@@ -1,5 +1,5 @@
 import "./styles/Buttons.css";
-import {socket} from "../App.js";
+import {socket} from "../Game.jsx";
 import { useEffect, useRef } from "react";
 
 export default function Buttons () {
@@ -8,7 +8,7 @@ export default function Buttons () {
     const chatTextRef = useRef();
 
     function startGame (e) {
-        //Start Game
+        // Start Game
         const element = e.target;
         const holder = document.getElementById("piece_holder");
         //holder.remove();
@@ -16,7 +16,11 @@ export default function Buttons () {
         element.style.backgroundColor = "red";
         holder.style.visibility = "hidden";
 
-        //Start button must submit initial board matrix state to server
+        socket.emit("start", {
+            player: "",
+            socketId: socket.id,
+        });
+
     }
     function endTurn (e) {
         console.log("End turn button clicked!");

@@ -1,33 +1,37 @@
-import './App.css';
+import './Game.css';
 import {io} from "socket.io-client";
 import Board from './components/Board';
 import Holder from './components/Holder';
 import Buttons from './components/Buttons';
 import Rules from "./components/Rules.js";
+import GamePlay from "./components/game.js";
+import Lobby from './pages/Lobby';
 import {useEffect, useState} from 'react';
 
 
             // Todo list: 
             // - if player move but does not want to attack: button to attack or end turn???
             // - Players turns 
-            // - Show pieces after attacking - 
+            // - Show pieces after attacking  
             // - hide adversary pieces
-            // - implement online (backend)
+            // - create rooms for players to chose from 
             // - adjust red light tiles next to lakes
             // - pieces deployement screen with timer and start game button
             // - game over screen showing all pieces and highlighting flag
-            // - if player deploy where is not supposed to get back to piece holder
+            // - If player deploy where is not supposed to get back to piece holder
             // - Create AI for single player
 
 // Connection to server
 export const socket = io("http://localhost:2000");
+let room;
 
 socket.on("connect", () => {
     window.alert(`You connected to the server!\nYour id is: ${socket.id}`)
     socket.emit("custom-event", "heyooo");
   });
 
-function App() {
+
+function Game() {
 
   let elementToDrag = null;
   let current_tile, tile_u, tile_d, tile_l, tile_r = null;
@@ -36,17 +40,26 @@ function App() {
   const rules = new Rules;
   
   useEffect(() => {
-    
+
+    // Starting Game
+    socket.on("gameStart", (data) => {
+      const game = new Game(data.p1, data.p2, data.p1_team, data.p2_team);
+    });
+    // Updating Board
     socket.on("updateBoard", (data) => {
         console.log("Updating board...");
         console.log(data);
         updatePositions(data.piece_id, data.tile_id, data.x, data.y);
     }); 
-
+    // Updating Attacks
     socket.on("updateAttack", (data) => {
         console.log("Updating attack board...");
         updateAttackResult(data.piece_id, data.adver_id, data.visibility, data.result);
     })
+    // Connection btw players
+    socket.on("playersConnected", (data) => {
+      console.log("Both Players Connected!");
+    });
 
   }, [socket]);
   
@@ -489,15 +502,22 @@ function App() {
                 elementToDrag.style.left = `${x*60 + board.offsetLeft}px`;
                 elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
 
+                socket.emit("movingPiece", {
+                  piece_id: elementToDrag.id,
+                  tile_id: new_parent_tile.id,
+                  x: x,
+                  y: y,
+                });
+
             } else {
                 console.log("cannot go here!");
                 // elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
                 // elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
             }
-        //Not empty tile    
-        } else {
-            console.log("Tile already occupied!");       
-        } 
+          //Not empty tile    
+          } else {
+              console.log("Tile already occupied!");       
+          } 
           
         } else {
           console.log("error: something wrong on drag end");
@@ -509,7 +529,7 @@ function App() {
 
 
   return (
-    <div id="app"
+    <div id="game"
       onMouseDown={e => dragStart(e)} 
       onMouseMove={e => _dragging(e)}
       onMouseUp={e => dragEnd(e)}
@@ -521,4 +541,4 @@ function App() {
   );
 }
 
-export default App;
+export default Game;
