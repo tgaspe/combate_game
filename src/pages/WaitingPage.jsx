@@ -22,7 +22,7 @@ function WaitingPage() {
         // Connection btw players
         socket.on("playersConnected", (data) => {
             console.log("Both Players Connected!");
-            socket.emit("deploment-phase");
+            socket.emit("deployment-phase", data.room);
             routeChange("/game");
         });
 

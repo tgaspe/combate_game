@@ -6,6 +6,7 @@
     width: 600px;
     height: 600px;
     background-color: rgb(2, 60, 3);
+    /*transform: rotate(-180deg);*/
 }
 
 #piece_holder {

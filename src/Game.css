@@ -31,7 +31,7 @@
     margin: 20px;
 }
 
-#piece_holder {
+.piece_holder {
   float: left;
   display: grid;
   grid-template-columns: repeat(4, 60px);

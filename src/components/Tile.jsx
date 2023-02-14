@@ -10,6 +10,7 @@ export default class Tile extends React.Component {
             index: this.key,
             piece_id: this.props.piece_id,
             tile_type: "game_piece",
+            team: this.props.team,
             piece: null,
             position: this.props.pos,
             image: this.props.image,
@@ -64,10 +65,12 @@ export default class Tile extends React.Component {
             height: "59px",
         }
 
+        const classes = `${this.state.tile_type} ${this.state.team}`;
+
         return (
         <div id={this.state.position} className="tile">
             {this.state.image !== null && 
-            <div id={this.state.piece_id} className={this.state.tile_type} style={piece_style} >{this.state.x},{this.state.y}</div>
+            <div id={this.state.piece_id} className={classes} style={piece_style} >{this.state.x},{this.state.y}</div>
             }
         </div>);
     }  

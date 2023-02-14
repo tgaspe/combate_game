@@ -1,7 +1,7 @@
 import Tile from "./Tile";
 import Piece from "./Piece.js";
-// import Rules from "./Rules.js";
-// import Game from "./game.js";
+import {socket} from "../Game.jsx";
+import {useEffect, useState} from 'react';
 
 //Pieces
 const pieces = [];
@@ -123,33 +123,34 @@ for (var rank = 0; rank < 12; rank++) {
     }
 }
 
-export default function Holder () {
+export default function HolderBlue () {
     
     const piece_select = [];
-    
+
     let index = 0;
     for (let i = 0; i < 10; i++) { //rows
-        for (let j= 0; j < 4; j++) {//collums
-            
+        for (let j= 6; j < 10; j++) {//collums
             let position =  "is" + j + i;
             let x = i;
             let y = j;
             let img = null;
             let id = null;
-            
-            //Putting pieces on board
+            let team = null;
+                
+            //Putting pieces on holder
             pieces.forEach((p) => {
                 let pos = p.getPosition();
                 if (pos[0] == i && pos[1] == j) {
                     img = p.getImage();
                     id = p.getId();
+                    team = p.getTeam();
                 }
             });
-            
-            piece_select.push(<Tile key={index} pos={position} image={img} x={x} y={y} piece_id={id}/>);
+                
+            piece_select.push(<Tile key={index} pos={position} image={img} team={team} x={x} y={y} piece_id={id}/>);
             index ++;
         }
     }
 
-    return (<div id='piece_holder'>{piece_select}</div>);
+    return (<div className='piece_holder' id="holder-blue" >{piece_select}</div>);
 }

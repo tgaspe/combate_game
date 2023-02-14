@@ -1,12 +1,15 @@
 import './Game.css';
 import {io} from "socket.io-client";
 import Board from './components/Board';
-import Holder from './components/Holder';
+import HolderRed from './components/HolderRed';
+import HolderBlue from './components/HolderBlue';
 import Buttons from './components/Buttons';
 import Rules from "./components/Rules.js";
 import GamePlay from "./components/game.js";
 import Lobby from './pages/Lobby';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
+import { useNavigate } from "react-router-dom";
+
 
 
             // Todo list: 
@@ -21,30 +24,64 @@ import {useEffect, useState} from 'react';
             // - If player deploy where is not supposed to get back to piece holder
             // - Create AI for single player
 
+
 // Connection to server
 export const socket = io("http://localhost:2000");
 let room;
 
-socket.on("connect", () => {
-    window.alert(`You connected to the server!\nYour id is: ${socket.id}`)
-    socket.emit("custom-event", "heyooo");
-  });
+// socket.on("connect", () => {
+//     window.alert(`You connected to the server!\nYour id is: ${socket.id}`)
+//     socket.emit("custom-event", "heyooo");
+//   });
 
 
-function Game() {
 
+function Game(args) {
+
+  //console.log(args);
+
+  // Variables
   let elementToDrag = null;
   let current_tile, tile_u, tile_d, tile_l, tile_r = null;
   let pos;
-  
+  const gameRef = useRef();
   const rules = new Rules;
+  let player;
+
   
   useEffect(() => {
 
+    // Setting player1 variable
+    socket.on("setPlayers", (data) => {
+        player = data.player1;
+        if (player) {
+            // hide blue holder
+            const blueHolder = document.getElementById("holder-blue");
+            blueHolder.style.display = "none";
+            // flip board and hide enemy pieces 
+            //const board = document.getElementById("board");
+            //board.style.transform = "rotate(180deg)";
+            const enemyPieces = document.getElementsByClassName("blue");
+            for (let i = 0; i < enemyPieces.length; i++) {
+                enemyPieces[i].style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+            }
+            //enemyPieces.style.backgroundImage = "./assets/images/enemy_icon.png";
+
+        } else {
+            const redHolder = document.getElementById("holder-red");
+            redHolder.style.display = "none";
+            const enemyPieces = document.getElementsByClassName("red");
+            for (let i = 0; i < enemyPieces.length; i++) {
+                enemyPieces[i].style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+            }
+        }
+    });
+
     // Starting Game
     socket.on("gameStart", (data) => {
-      const game = new Game(data.p1, data.p2, data.p1_team, data.p2_team);
+      const game = new GamePlay(data.p1, data.p2, data.p1_team, data.p2_team);
     });
+
     // Updating Board
     socket.on("updateBoard", (data) => {
         console.log("Updating board...");
@@ -56,12 +93,9 @@ function Game() {
         console.log("Updating attack board...");
         updateAttackResult(data.piece_id, data.adver_id, data.visibility, data.result);
     })
-    // Connection btw players
-    socket.on("playersConnected", (data) => {
-      console.log("Both Players Connected!");
-    });
+    
 
-  }, [socket]);
+  }, []);
   
   // --- Update Board functions ---
   function updatePositions (piece_id, tile_id, x, y) {
@@ -77,7 +111,6 @@ function Game() {
     //Attach piece div to tile
     tile.appendChild(piece);
   }
-  
   function updateAttackResult (piece_id, adver_id, visibility, result) {
     //const board = document.getElementById("board");
     const piece = document.getElementById(piece_id);
@@ -95,7 +128,6 @@ function Game() {
         piece.remove();
     }
   }
-
   // --- Move piece functions ---
   function dragStart (e) {
       
@@ -345,7 +377,7 @@ function Game() {
               elementToDrag.style.top = `${Y}px`;
           } 
 
-        } else if (elementToDrag.parentNode.parentNode.id === "piece_holder") {
+        } else if (elementToDrag.parentNode.parentNode.className === "piece_holder") {
             
             elementToDrag.style.left = `${X}px`;
             elementToDrag.style.top = `${Y}px`;
@@ -490,7 +522,7 @@ function Game() {
               }
           }  
 
-        } else if (elementToDrag.parentNode.parentNode.id === "piece_holder") {
+        } else if (elementToDrag.parentNode.parentNode.className === "piece_holder") {
           // --- Deploying pieces ---
           //Empty tile
           if (new_parent_tile.childElementCount === 0) {
@@ -529,16 +561,18 @@ function Game() {
 
 
   return (
-    <div id="game"
+    <div id="game" ref={gameRef}
       onMouseDown={e => dragStart(e)} 
       onMouseMove={e => _dragging(e)}
       onMouseUp={e => dragEnd(e)}
-      >
-        <Holder/>
+      >  
+        <HolderRed/>
+        <HolderBlue/>
         <Board/>
-        <Buttons/>
+        <Buttons />
     </div>
   );
+
 }
 
 export default Game;
