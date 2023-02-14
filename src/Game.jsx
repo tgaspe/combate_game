@@ -14,9 +14,8 @@ import { useNavigate } from "react-router-dom";
 
             // Todo list: 
             // - if player move but does not want to attack: button to attack or end turn???
-            // - Players turns 
-            // - Show pieces after attacking  
-            // - hide adversary pieces
+            // - Players turns   
+            // - flip board for red team
             // - create rooms for players to chose from 
             // - adjust red light tiles next to lakes
             // - pieces deployement screen with timer and start game button
@@ -27,49 +26,47 @@ import { useNavigate } from "react-router-dom";
 
 // Connection to server
 export const socket = io("http://localhost:2000");
-let room;
-
-// socket.on("connect", () => {
-//     window.alert(`You connected to the server!\nYour id is: ${socket.id}`)
-//     socket.emit("custom-event", "heyooo");
-//   });
 
 
+function Game() {
 
-function Game(args) {
-
-  //console.log(args);
-
-  // Variables
-  let elementToDrag = null;
-  let current_tile, tile_u, tile_d, tile_l, tile_r = null;
-  let pos;
+  // --- Variables ---
   const gameRef = useRef();
   const rules = new Rules;
+  let elementToDrag = null;
+  let current_tile, tile_u, tile_d, tile_l, tile_r = null;
+  let deploymentPhase = true;
+  let pos;
   let player;
+  let turn;
+  let room;
+  let moves = 0;
+  let attacks = 0;
 
   
   useEffect(() => {
 
     // Setting player1 variable
     socket.on("setPlayers", (data) => {
+        room = data.room;
         player = data.player1;
         if (player) {
             // hide blue holder
             const blueHolder = document.getElementById("holder-blue");
             blueHolder.style.display = "none";
-            // flip board and hide enemy pieces 
-            //const board = document.getElementById("board");
-            //board.style.transform = "rotate(180deg)";
+            // hide adversary pieces
             const enemyPieces = document.getElementsByClassName("blue");
             for (let i = 0; i < enemyPieces.length; i++) {
                 enemyPieces[i].style.backgroundImage = "url(./assets/images/enemy_icon.png)";
             }
-            //enemyPieces.style.backgroundImage = "./assets/images/enemy_icon.png";
+            // flip board
+            //const board = document.getElementById("board");
+            //board.style.transform = "rotate(180deg)";
 
         } else {
             const redHolder = document.getElementById("holder-red");
             redHolder.style.display = "none";
+            // hide adversary pieces
             const enemyPieces = document.getElementsByClassName("red");
             for (let i = 0; i < enemyPieces.length; i++) {
                 enemyPieces[i].style.backgroundImage = "url(./assets/images/enemy_icon.png)";
@@ -79,7 +76,8 @@ function Game(args) {
 
     // Starting Game
     socket.on("gameStart", (data) => {
-      const game = new GamePlay(data.p1, data.p2, data.p1_team, data.p2_team);
+        deploymentPhase = false;
+        const game = new GamePlay(data.p1, data.p2, data.p1_team, data.p2_team);
     });
 
     // Updating Board
@@ -93,6 +91,20 @@ function Game(args) {
         console.log("Updating attack board...");
         updateAttackResult(data.piece_id, data.adver_id, data.visibility, data.result);
     })
+
+    socket.on("newTurn", () => {
+        console.log("new turn received");
+        turn = true;
+        moves = 0;
+        attacks = 0;
+    });
+
+    if (attacks === 1) {
+        socket.emit("endTurn", {roomId: room, player1: player});
+        turn = false;
+        console.log("end turn submited ...");
+    }
+
     
 
   }, []);
@@ -121,12 +133,22 @@ function Game(args) {
         piece.remove();
         adver.remove();
     } else if (result === "win") {
+        
         console.log("winn");
+        let pieceImage = getPieceImg(piece_id);
+        piece.style.backgroundImage = `url(${pieceImage})`;
         adver.remove();
+
+        // Revert back background
+        setTimeout(() => {
+            piece.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+        }, 2000);
+
     } else {
         console.log("tieee");
         piece.remove();
     }
+
   }
   // --- Move piece functions ---
   function dragStart (e) {
@@ -324,7 +346,7 @@ function Game(args) {
               }
           } 
 
-        } else if (elementToDrag.parentNode.parentNode.id === "piece_holder") {
+        } else if (elementToDrag.parentNode.parentNode.id === "piece_holder" && deploymentPhase === true) {
           console.log("Deploying piece");
 
         } else {
@@ -427,13 +449,17 @@ function Game(args) {
                   elementToDrag.style.left = `${x*60 + board.offsetLeft}px`;
                   elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
                   console.log("Can go here! empty tile.");
+
                   // Send to Server
                   socket.emit("movingPiece", {
+                    roomId: room,
                     piece_id: elementToDrag.id,
                     tile_id: new_parent_tile.id,
                     x: x,
                     y: y,
                   });
+                
+                  moves ++;                  
 
               } else {
                   console.log("cannot go here!");
@@ -467,11 +493,14 @@ function Game(args) {
                           parent_child.remove();
                           
                           socket.emit("attack", {
+                            roomId: room,
                             piece_id: elementToDrag.id,
                             adver_id: parent_child.id,
                             visibility: "none",
                             result: "tie",
                           });
+
+                          attacks++;
 
                       } else if (attack_result === 1) {
                           // Won
@@ -480,35 +509,47 @@ function Game(args) {
                           parent_child.remove();
                           
                           socket.emit("attack", {
+                            roomId: room,
                             piece_id: elementToDrag.id,
                             adver_id: parent_child.id,
                             visibility: "player",
                             result: "win",
                           });
-
-
-                          //TODO: Show to the adversary your piece
+                          
+                          let pieceImage = getPieceImg(id);
+                          console.log('Show your piece to the adv!');
+                          //elementToDrag.style.backgroundImage = `url(${pieceImage})`;
+                          // Revert back background
                           setTimeout(() => {
-                              console.log('Show your piece to the adv!');
+                              //elementToDrag.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
                             }, 2000);
+
+                          attacks++;
                           
 
                       } else {
-                          
                           // Lost
                           elementToDrag.remove();
 
                           socket.emit("attack", {
+                            roomId: room,
                             piece_id: elementToDrag.id,
                             adver_id: parent_child.id,
                             visibility: "adver",
                             result: "lost",
                           });
 
-                          //TODO: Show adversary piece to you
+                          let pieceImage = getPieceImg(id_adv);
+                          console.log('Adv show his piece to you');
+                          parent_child.style.backgroundImage = `url(${pieceImage})`;
+                          // Revert back background
                           setTimeout(() => {
-                              console.log('Adv show his piece to you!')
-                          }, 2000);
+                              parent_child.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+                            }, 2000);
+
+                          attacks++;
+
+                          
 
                       }
 
@@ -559,6 +600,15 @@ function Game(args) {
       }
   }
 
+  function getPieceImg(pieceId) {
+    const img_pieces = ["./assets/images/flag.png", "./assets/images/spie.png","./assets/images/soldier.png", "./assets/images/corporal.png", 
+    "./assets/images/sargent.png","./assets/images/liutenant.png", "./assets/images/captain.png", 
+    "./assets/images/major.png", "./assets/images/colonel.png", "./assets/images/general.png",
+    "./assets/images/5star_general.png", "./assets/images/bomb.png" ];
+    
+    let index = pieceId.slice(pieceId.indexOf("-") + 1, pieceId.lastIndexOf("-"));
+    return img_pieces[index];
+  }
 
   return (
     <div id="game" ref={gameRef}

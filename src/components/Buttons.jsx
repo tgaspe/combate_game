@@ -6,25 +6,26 @@ export default function Buttons () {
 
     const chatInputRef = useRef();
     const chatTextRef = useRef();
+    let roomId;
 
     function startGame (e) {
-        // Start Game
+        // Hide Holders
         const element = e.target;
-        const holder = document.getElementById("piece_holder");
-        //holder.remove();
-        //element.style.display = "none";
+        const holders = document.getElementsByClassName("piece_holder");
         element.style.backgroundColor = "red";
-        holder.style.visibility = "hidden";
-
+        for (let i in holders) {
+            holders[i].style.visibility = "hidden";
+        }
+        // Start Game
         socket.emit("start", {
-            player: "",
-            socketId: socket.id,
+            //implement here
+            room: roomId,
         });
 
     }
     function endTurn (e) {
         console.log("End turn button clicked!");
-        //End turn button must submit current board state to the other player
+        socket.emit("endTurn", {});
     }
     function sendText (e) {
         e.preventDefault();
@@ -42,6 +43,11 @@ export default function Buttons () {
             div.innerHTML = data;
             chatText.append(div); 
         }); 
+
+        socket.on("setPlayers", (data) => {
+            roomId = data.room;
+        });
+
       }, [socket]);
 
     return (

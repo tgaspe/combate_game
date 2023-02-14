@@ -8,7 +8,7 @@ const pieces = [];
 const img_pieces = ["./assets/images/flag.png", "./assets/images/spie.png","./assets/images/soldier.png", "./assets/images/corporal.png", 
 "./assets/images/sargent.png","./assets/images/liutenant.png", "./assets/images/captain.png", 
 "./assets/images/major.png", "./assets/images/colonel.png", "./assets/images/general.png",
-"./assets/images/5star_general.png", "./assets/images/bomb.png" ]
+"./assets/images/5star_general.png", "./assets/images/bomb.png" ];
 
 //Initializing pieces array
 for (var rank = 0; rank < 12; rank++) {

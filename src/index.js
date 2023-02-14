@@ -19,7 +19,7 @@ export default function App() {
         <Routes>
             <Route path="/" element={<Layout />}>
             <Route index element={<Lobby />} />
-            <Route path="game" element={<Game player1={true}/>} />
+            <Route path="game" element={<Game />} />
             <Route path="waiting-page" element={<WaitingPage />} />
             <Route path="*" element={<Error />} />
           </Route>
