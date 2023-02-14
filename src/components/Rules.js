@@ -176,6 +176,10 @@ export default class Rules {
                 console.log("Bomb disarmed!");
                 return 1;
             }
+            if (rank === 1 && rank_adv === 10) {
+                console.log("Spie Attack on 5 Star General!");
+                return 1;
+            }
             console.log("you die!");
             return -1;
         }

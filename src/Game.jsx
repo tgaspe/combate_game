@@ -6,21 +6,16 @@ import HolderBlue from './components/HolderBlue';
 import Buttons from './components/Buttons';
 import Rules from "./components/Rules.js";
 import GamePlay from "./components/game.js";
-import Lobby from './pages/Lobby';
-import {useEffect, useState, useRef} from 'react';
-import { useNavigate } from "react-router-dom";
-
-
+import { useEffect, useRef } from 'react';
 
             // Todo list: 
             // - if player move but does not want to attack: button to attack or end turn???
             // - Players turns   
             // - flip board for red team
-            // - create rooms for players to chose from 
-            // - adjust red light tiles next to lakes
+            // - fix rooms in the backend socket.join() and socket.to()
             // - pieces deployement screen with timer and start game button
             // - game over screen showing all pieces and highlighting flag
-            // - If player deploy where is not supposed to get back to piece holder
+            // - Deploy Game on a real website
             // - Create AI for single player
 
 
@@ -42,6 +37,8 @@ function Game() {
   let room;
   let moves = 0;
   let attacks = 0;
+  let mouseX;
+  let mouseY;
 
   
   useEffect(() => {
@@ -326,21 +323,25 @@ function Game() {
               
               if (tile_u.lastElementChild) {
                   tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                  if (tile_u.lastElementChild.className === "lake undefined") {tile_u.style.backgroundColor = "grey"}
               } else {
                   tile_u.style.backgroundColor = '#1fd137';
               }
               if (tile_d.lastElementChild) {
                   tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                  if (tile_d.lastElementChild.className === "lake undefined") {tile_d.style.backgroundColor = "grey"}
               } else {
                   tile_d.style.backgroundColor = '#1fd137';
               } 
               if (tile_l.lastElementChild) {
                   tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                  if (tile_l.lastElementChild.className === "lake undefined") {tile_l.style.backgroundColor = "grey"}
               } else {
                   tile_l.style.backgroundColor = '#1fd137';
               }
               if (tile_r.lastElementChild) {
                   tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                  if (tile_r.lastElementChild.className === "lake undefined") {tile_r.style.backgroundColor = "grey"}
               } else {
                   tile_r.style.backgroundColor = '#1fd137';
               }
@@ -527,7 +528,7 @@ function Game() {
                           attacks++;
                           
 
-                      } else {
+                      } else if (attack_result === -1){
                           // Lost
                           elementToDrag.remove();
 
@@ -551,6 +552,9 @@ function Game() {
 
                           
 
+                      } else { // Game Over: You Won
+                         socket.emit("GAME-OVER");
+                         console.log("game over!!! ")
                       }
 
 
@@ -583,9 +587,20 @@ function Game() {
                 });
 
             } else {
+                let holder;
+                if (player) {
+                    holder = document.getElementById("holder-red");
+                    pos = current_tile.id.slice(2);
+                    elementToDrag.style.left = `${parseInt(pos[0])*60 + holder.offsetLeft}px`;
+                    elementToDrag.style.top = `${parseInt(pos[1])*60 + holder.offsetTop}px`;
+                } else {
+                    holder = document.getElementById("holder-blue");
+                    pos = current_tile.id.slice(2);
+                    elementToDrag.style.left = `${(parseInt(pos[0])-6)*60 + holder.offsetLeft}px`;
+                    elementToDrag.style.top =  `${parseInt(pos[1])*60 + holder.offsetTop}px`;
+                }
                 console.log("cannot go here!");
-                // elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
-                // elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                
             }
           //Not empty tile    
           } else {
