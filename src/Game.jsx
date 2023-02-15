@@ -14,7 +14,8 @@ import { useEffect, useRef } from 'react';
             // - flip board for red team
             // - fix rooms in the backend socket.join() and socket.to()
             // - pieces deployement screen with timer and start game button
-            // - game over screen showing all pieces and highlighting flag
+            // - prevent selecting on mouse on dragging
+            // - make it that you can move only your pieces and not the adv as well
             // - Deploy Game on a real website
             // - Create AI for single player
 
@@ -45,8 +46,11 @@ function Game() {
 
     // Setting player1 variable
     socket.on("setPlayers", (data) => {
+        console.log("On set players: ")
+        console.log(data)
         room = data.room;
         player = data.player1;
+        console.log("room: " + room + " player: " + player);
         if (player) {
             // hide blue holder
             const blueHolder = document.getElementById("holder-blue");
@@ -115,8 +119,6 @@ function Game() {
                 let pieceImage = getPieceImg(piece_id);
                 enemyPieces[i].style.backgroundImage = `url(${pieceImage})`;
             }
-            
-
         } else {
             // show red pieces
             console.log("did i got here? Blue player");
@@ -477,10 +479,11 @@ function Game() {
                   elementToDrag.style.left = `${x*60 + board.offsetLeft}px`;
                   elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
                   console.log("Can go here! empty tile.");
-
+                  console.log("room: " + room);
                   // Send to Server
                   socket.emit("movingPiece", {
                     roomId: room,
+                    player1: player,
                     piece_id: elementToDrag.id,
                     tile_id: new_parent_tile.id,
                     x: x,
@@ -522,6 +525,7 @@ function Game() {
                           
                           socket.emit("attack", {
                             roomId: room,
+                            player1: player,
                             piece_id: elementToDrag.id,
                             adver_id: parent_child.id,
                             visibility: "none",
@@ -538,6 +542,7 @@ function Game() {
                           
                           socket.emit("attack", {
                             roomId: room,
+                            player1: player,
                             piece_id: elementToDrag.id,
                             adver_id: parent_child.id,
                             visibility: "player",
@@ -561,6 +566,7 @@ function Game() {
 
                           socket.emit("attack", {
                             roomId: room,
+                            player1: player,
                             piece_id: elementToDrag.id,
                             adver_id: parent_child.id,
                             visibility: "adver",
@@ -584,7 +590,10 @@ function Game() {
                         elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
                         elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
                         
-                        socket.emit("GAME-OVER", {player1: player});
+                        socket.emit("GAME-OVER", {
+                            roomId: room,
+                            player1: player,
+                        });
                         
                         console.log("game over!!! ");
                         console.log("player var: " + player);
@@ -613,11 +622,13 @@ function Game() {
                 elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
 
                 socket.emit("movingPiece", {
-                  piece_id: elementToDrag.id,
-                  tile_id: new_parent_tile.id,
-                  x: x,
-                  y: y,
-                });
+                    roomId: room,
+                    player1: player,
+                    piece_id: elementToDrag.id,
+                    tile_id: new_parent_tile.id,
+                    x: x,
+                    y: y,
+                  });
 
             } else {
                 let holder;

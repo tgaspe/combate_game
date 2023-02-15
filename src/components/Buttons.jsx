@@ -7,6 +7,7 @@ export default function Buttons () {
     const chatInputRef = useRef();
     const chatTextRef = useRef();
     let roomId;
+    let player;
 
     function startGame (e) {
         // Hide Holders
@@ -31,11 +32,20 @@ export default function Buttons () {
         e.preventDefault();
         const chatInput = chatInputRef.current;
         console.log("sending msg to server...");
-        socket.emit("sendMsgToServer", chatInput.value);
+        //console.log("roomId: " + roomId + " player: " + player + " msg: " + chatInput.value);
+        socket.emit("sendMsgToServer", {room: roomId, player1: player, msg: chatInput.value});
         chatInput.value = "";
     }
     
     useEffect(() => {
+
+        socket.on("setPlayers", (data) => {
+            console.log("set players received in buttons:")
+            console.log(data);
+            roomId = data.room;
+            player = data.player1;
+        });
+
         socket.on("addToChat", (data) => {
             const chatText = chatTextRef.current;
             console.log("message received from server: adding to chat.");
@@ -44,18 +54,14 @@ export default function Buttons () {
             chatText.append(div); 
         }); 
 
-        socket.on("setPlayers", (data) => {
-            roomId = data.room;
-        });
-
         socket.on('End-Screen', (data) => {
             const chatText = chatTextRef.current;
-            console.log("End Screen: Append to chat winner: " + data.winner);
+            console.log("End Screen: Append to chat winner: " + data);
             const div = document.createElement("div");
             if (data.winner) {
-                div.innerHTML = "GAME-OVER!!!\nWinner: Red";
+                div.innerHTML = "GAME-OVER! Red Won";
             } else {
-                div.innerHTML = "GAME-OVER!!!\nWinner: Blue";
+                div.innerHTML = "GAME-OVER! Blue Won";
             }
             chatText.append(div);
         })
