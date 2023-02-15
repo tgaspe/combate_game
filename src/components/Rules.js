@@ -169,6 +169,7 @@ export default class Rules {
             if (rank_adv === 0) {
                 console.log("you won the GAME!");
                 console.log("show all the pieces in the game")
+                return 33;
             }
             return 1;
         } else {

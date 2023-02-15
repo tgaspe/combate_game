@@ -48,6 +48,18 @@ export default function Buttons () {
             roomId = data.room;
         });
 
+        socket.on('End-Screen', (data) => {
+            const chatText = chatTextRef.current;
+            console.log("End Screen: Append to chat winner: " + data.winner);
+            const div = document.createElement("div");
+            if (data.winner) {
+                div.innerHTML = "GAME-OVER!!!\nWinner: Red";
+            } else {
+                div.innerHTML = "GAME-OVER!!!\nWinner: Blue";
+            }
+            chatText.append(div);
+        })
+
       }, [socket]);
 
     return (

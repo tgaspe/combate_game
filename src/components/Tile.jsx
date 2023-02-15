@@ -70,7 +70,7 @@ export default class Tile extends React.Component {
         return (
         <div id={this.state.position} className="tile">
             {this.state.image !== null && 
-            <div id={this.state.piece_id} className={classes} style={piece_style} >{this.state.x},{this.state.y}</div>
+            <div id={this.state.piece_id} className={classes} style={piece_style} >{this.state.piece_id != null? this.state.piece_id.slice(this.state.piece_id.indexOf("-") + 1, this.state.piece_id.lastIndexOf("-")): ""}</div>
             }
         </div>);
     }  

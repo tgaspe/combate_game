@@ -55,6 +55,7 @@ function Game() {
             const enemyPieces = document.getElementsByClassName("blue");
             for (let i = 0; i < enemyPieces.length; i++) {
                 enemyPieces[i].style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+                enemyPieces[i].innerHTML = "*";
             }
             // flip board
             //const board = document.getElementById("board");
@@ -67,6 +68,7 @@ function Game() {
             const enemyPieces = document.getElementsByClassName("red");
             for (let i = 0; i < enemyPieces.length; i++) {
                 enemyPieces[i].style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+                enemyPieces[i].innerHTML = "*";
             }
         }
     });
@@ -102,6 +104,31 @@ function Game() {
         console.log("end turn submited ...");
     }
 
+    socket.on("End-Screen", () => {
+        console.log("recived end screen from server!")
+        if (player) {
+            // show blue pieces
+            console.log("did i got here? Red Player");
+            const enemyPieces = document.getElementsByClassName("blue");
+            for (let i = 0; i < enemyPieces.length; i++) {
+                let piece_id = enemyPieces[i].id;
+                let pieceImage = getPieceImg(piece_id);
+                enemyPieces[i].style.backgroundImage = `url(${pieceImage})`;
+            }
+            
+
+        } else {
+            // show red pieces
+            console.log("did i got here? Blue player");
+            const enemyPieces = document.getElementsByClassName("red");
+            for (let i = 0; i < enemyPieces.length; i++) {
+                let piece_id = enemyPieces[i].id;
+                let pieceImage = getPieceImg(piece_id);
+                enemyPieces[i].style.backgroundImage = `url(${pieceImage})`;
+            }
+            
+        }
+    })
     
 
   }, []);
@@ -553,8 +580,14 @@ function Game() {
                           
 
                       } else { // Game Over: You Won
-                         socket.emit("GAME-OVER");
-                         console.log("game over!!! ")
+                        // Return piece to its position
+                        elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                        elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                        
+                        socket.emit("GAME-OVER", {player1: player});
+                        
+                        console.log("game over!!! ");
+                        console.log("player var: " + player);
                       }
 
 

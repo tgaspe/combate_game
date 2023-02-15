@@ -12,9 +12,8 @@
     background-repeat: "no-repeat";
     background-size: "59px"; 
     width: "59px";
-    height: "59px"
+    height: "59px";
 }
-
 
 .tile .game_piece:hover {
     cursor: grab;
@@ -23,6 +22,15 @@
     cursor: grabbing;
 }
 
+.red {
+    font-size: 20px;
+    color: rgb(250, 3, 3);
+}
+
+.blue {
+    font-size: 20px;
+    color: rgb(0, 149, 255);
+}
 
 .pieces-img {
     display: grid;
