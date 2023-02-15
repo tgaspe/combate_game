@@ -12,7 +12,6 @@ import { useEffect, useRef } from 'react';
             // - if player move but does not want to attack: button to attack or end turn???
             // - Players turns   
             // - flip board for red team
-            // - fix rooms in the backend socket.join() and socket.to()
             // - pieces deployement screen with timer and start game button
             // - prevent selecting on mouse on dragging
             // - make it that you can move only your pieces and not the adv as well
@@ -178,7 +177,7 @@ function Game() {
   }
   // --- Move piece functions ---
   function dragStart (e) {
-      
+      e.preventDefault() 
       elementToDrag = e.target;
 
       if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
@@ -394,7 +393,7 @@ function Game() {
       
   }
   function _dragging (e) {
-
+    e.preventDefault() 
     const board = document.getElementById("board");
   
       if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
@@ -443,7 +442,7 @@ function Game() {
   
   }
   function dragEnd (e) {
-
+      e.preventDefault() 
       if (elementToDrag) {
         
         const board = document.getElementById("board");
@@ -582,8 +581,6 @@ function Game() {
                             }, 2000);
 
                           attacks++;
-
-                          
 
                       } else { // Game Over: You Won
                         // Return piece to its position
