@@ -11,13 +11,12 @@ import { useEffect, useRef } from 'react';
             // Todo list: 
             // - if player move but does not want to attack: button to attack or end turn???
             // - Players turns   
+            // - make it that you can move only your pieces and not the adv as well
             // - flip board for red team
             // - pieces deployement screen with timer and start game button
-            // - prevent selecting on mouse on dragging
-            // - make it that you can move only your pieces and not the adv as well
+            // - css for lobby and waiting room
             // - Deploy Game on a real website
             // - Create AI for single player
-
 
 // Connection to server
 export const socket = io("http://localhost:2000");
@@ -33,14 +32,10 @@ function Game() {
   let deploymentPhase = true;
   let pos;
   let player;
-  let turn;
+  let turn = true;
   let room;
   let moves = 0;
-  let attacks = 0;
-  let mouseX;
-  let mouseY;
 
-  
   useEffect(() => {
 
     // Setting player1 variable
@@ -98,14 +93,7 @@ function Game() {
         console.log("new turn received");
         turn = true;
         moves = 0;
-        attacks = 0;
     });
-
-    if (attacks === 1) {
-        socket.emit("endTurn", {roomId: room, player1: player});
-        turn = false;
-        console.log("end turn submited ...");
-    }
 
     socket.on("End-Screen", () => {
         console.log("recived end screen from server!")
@@ -186,10 +174,12 @@ function Game() {
         const team = id.slice(0, 3);
         current_tile = elementToDrag.parentNode;
 
-        if (elementToDrag.parentNode.parentNode.id === "board") {
-          //Ligth current tile yellow
+        console.log("turn: " + turn + " moves: " + moves);
+        if (elementToDrag.parentNode.parentNode.id === "board" && turn === true) {
+          
+            //Ligth current tile yellow
           current_tile.style.backgroundColor = "yellow";
-
+            
           //Light adjecent tiles
           pos = current_tile.id.slice(2);
           if (parseInt(pos[0]) === 0) {
@@ -442,9 +432,8 @@ function Game() {
   
   }
   function dragEnd (e) {
-      e.preventDefault() 
-      if (elementToDrag) {
-        
+    e.preventDefault() 
+    if (elementToDrag) {        
         const board = document.getElementById("board");
         const id = elementToDrag.id;
         const team = id.slice(0, 3);
@@ -459,152 +448,168 @@ function Game() {
 
         if (elementToDrag.parentNode.parentNode.id === "board") {
         
-          //Set tile colors back to normal
-          if (current_tile) {current_tile.style.backgroundColor = null;}
-          if (tile_u) {tile_u.style.backgroundColor = null;}
-          if (tile_d) {tile_d.style.backgroundColor = null;}
-          if (tile_l) {tile_l.style.backgroundColor = null;}
-          if (tile_r) {tile_r.style.backgroundColor = null;} 
+            //Set tile colors back to normal
+            if (current_tile) {current_tile.style.backgroundColor = null;}
+            if (tile_u) {tile_u.style.backgroundColor = null;}
+            if (tile_d) {tile_d.style.backgroundColor = null;}
+            if (tile_l) {tile_l.style.backgroundColor = null;}
+            if (tile_r) {tile_r.style.backgroundColor = null;} 
 
-              
-          // --- Moving and attacking ---
-          // Empty tile
-          if (new_parent_tile.childElementCount === 0) {
-
-              if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, parseInt(rank)) === true) {
-
-                  new_parent_tile.appendChild(elementToDrag);
-                  //Set piece position in the middle of selected tile
-                  elementToDrag.style.left = `${x*60 + board.offsetLeft}px`;
-                  elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
-                  console.log("Can go here! empty tile.");
-                  console.log("room: " + room);
-                  // Send to Server
-                  socket.emit("movingPiece", {
-                    roomId: room,
-                    player1: player,
-                    piece_id: elementToDrag.id,
-                    tile_id: new_parent_tile.id,
-                    x: x,
-                    y: y,
-                  });
                 
-                  moves ++;                  
+            // --- Moving and attacking ---
+            // Empty tile
+            if (new_parent_tile.childElementCount === 0) {
 
-              } else {
-                  console.log("cannot go here!");
-                  elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
-                  elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
-              }
-          // Not empty tile    
-          } else {
+                if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, parseInt(rank)) === true) {
 
-              if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, team) === true) {// Not empty
-              
-                  const parent_child = new_parent_tile.lastElementChild;
-                  const id_adv = parent_child.id;
-                  const team_adv = id_adv.slice(0, 3);
-                  const rank_adv = id_adv.slice(id_adv.indexOf("-") + 1, id_adv.lastIndexOf("-"));
-                  
-                  // lake tile or ally tile
-                  if (team_adv === team || parent_child.className === "lake") {
-                      // Invalid move return x, y to previous place
-                      console.log("cannot go here! ally or lake there!");
-                      elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
-                      elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
-                  } else { // Enemy tile 
-                      console.log("attack command!");
-                      
-                      let attack_result = rules.attack(parseInt(rank), parseInt(rank_adv));
-
-                      if (attack_result === 0) {
-                          // Tie
-                          elementToDrag.remove();
-                          parent_child.remove();
-                          
-                          socket.emit("attack", {
-                            roomId: room,
-                            player1: player,
-                            piece_id: elementToDrag.id,
-                            adver_id: parent_child.id,
-                            visibility: "none",
-                            result: "tie",
-                          });
-
-                          attacks++;
-
-                      } else if (attack_result === 1) {
-                          // Won
-                          elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
-                          elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
-                          parent_child.remove();
-                          
-                          socket.emit("attack", {
-                            roomId: room,
-                            player1: player,
-                            piece_id: elementToDrag.id,
-                            adver_id: parent_child.id,
-                            visibility: "player",
-                            result: "win",
-                          });
-                          
-                          let pieceImage = getPieceImg(id);
-                          console.log('Show your piece to the adv!');
-                          //elementToDrag.style.backgroundImage = `url(${pieceImage})`;
-                          // Revert back background
-                          setTimeout(() => {
-                              //elementToDrag.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
-                            }, 2000);
-
-                          attacks++;
-                          
-
-                      } else if (attack_result === -1){
-                          // Lost
-                          elementToDrag.remove();
-
-                          socket.emit("attack", {
-                            roomId: room,
-                            player1: player,
-                            piece_id: elementToDrag.id,
-                            adver_id: parent_child.id,
-                            visibility: "adver",
-                            result: "lost",
-                          });
-
-                          let pieceImage = getPieceImg(id_adv);
-                          console.log('Adv show his piece to you');
-                          parent_child.style.backgroundImage = `url(${pieceImage})`;
-                          // Revert back background
-                          setTimeout(() => {
-                              parent_child.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
-                            }, 2000);
-
-                          attacks++;
-
-                      } else { // Game Over: You Won
-                        // Return piece to its position
+                    if (rank != 2 && moves === 1) {
                         elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
                         elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
-                        
-                        socket.emit("GAME-OVER", {
+                    } else if (rank === 2 && moves === 2) {
+                        elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                        elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                    } else {
+                        new_parent_tile.appendChild(elementToDrag);
+                        //Set piece position in the middle of selected tile
+                        elementToDrag.style.left = `${x*60 + board.offsetLeft}px`;
+                        elementToDrag.style.top = `${y*60 + board.offsetTop}px`;
+                        console.log("Can go here! empty tile.");
+                        console.log("room: " + room);
+                        // Send to Server
+                        socket.emit("movingPiece", {
                             roomId: room,
                             player1: player,
+                            piece_id: elementToDrag.id,
+                            tile_id: new_parent_tile.id,
+                            x: x,
+                            y: y,
                         });
                         
-                        console.log("game over!!! ");
-                        console.log("player var: " + player);
-                      }
+                        moves ++;
+
+                        if (rank === 2 && moves === 2) {
+                            // end turn 
+                            console.log("soldier can only move 2 tiles max")
+                            turn = false;
+                            socket.emit("endTurn", {roomId: room, player1: player});
+                        }
+                    }                 
+
+                } else {
+                    console.log("cannot go here!");
+                    elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                    elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                }
+            // Not empty tile    
+            } else {
+
+                if (rules.isValidMove(parseInt(pos[0]), parseInt(pos[1]), x, y, team) === true) {// Not empty
+                
+                    const parent_child = new_parent_tile.lastElementChild;
+                    const id_adv = parent_child.id;
+                    const team_adv = id_adv.slice(0, 3);
+                    const rank_adv = id_adv.slice(id_adv.indexOf("-") + 1, id_adv.lastIndexOf("-"));
+                    
+                    // lake tile or ally tile
+                    if (team_adv === team || parent_child.className === "lake") {
+                        // Invalid move return x, y to previous place
+                        console.log("cannot go here! ally or lake there!");
+                        elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                        elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                    } else { // Enemy tile 
+                        console.log("attack command!");
+                        
+                        let attack_result = rules.attack(parseInt(rank), parseInt(rank_adv));
+
+                        if (attack_result === 0) {
+                            // Tie
+                            elementToDrag.remove();
+                            parent_child.remove();
+                            
+                            socket.emit("attack", {
+                                roomId: room,
+                                player1: player,
+                                piece_id: elementToDrag.id,
+                                adver_id: parent_child.id,
+                                visibility: "none",
+                                result: "tie",
+                            });
+
+                            turn = false;
+                            socket.emit("endTurn", {roomId: room, player1: player});
+
+                        } else if (attack_result === 1) {
+                            // Won
+                            elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                            elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                            parent_child.remove();
+                            
+                            socket.emit("attack", {
+                                roomId: room,
+                                player1: player,
+                                piece_id: elementToDrag.id,
+                                adver_id: parent_child.id,
+                                visibility: "player",
+                                result: "win",
+                            });
+                            
+                            let pieceImage = getPieceImg(id);
+                            console.log('Show your piece to the adv!');
+                            //elementToDrag.style.backgroundImage = `url(${pieceImage})`;
+                            // Revert back background
+                            setTimeout(() => {
+                                //elementToDrag.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+                            }, 2000);
+                            turn = false;
+                            socket.emit("endTurn", {roomId: room, player1: player});
+
+                        } else if (attack_result === -1){
+                            // Lost
+                            elementToDrag.remove();
+
+                            socket.emit("attack", {
+                                roomId: room,
+                                player1: player,
+                                piece_id: elementToDrag.id,
+                                adver_id: parent_child.id,
+                                visibility: "adver",
+                                result: "lost",
+                            });
+
+                            let pieceImage = getPieceImg(id_adv);
+                            console.log('Adv show his piece to you');
+                            parent_child.style.backgroundImage = `url(${pieceImage})`;
+                            // Revert back background
+                            setTimeout(() => {
+                                parent_child.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+                                }, 2000);
+                            
+                            turn = false;
+                            socket.emit("endTurn", {roomId: room, player1: player});
+
+                        } else { // Game Over: You Won
+                            // Return piece to its position
+                            elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                            elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                            
+                            socket.emit("GAME-OVER", {
+                                roomId: room,
+                                player1: player,
+                            });
+                            
+                            console.log("game over!!! ");
+                            console.log("player var: " + player);
+                        }
 
 
-                  }
-                  //if child node of new parent tile enemy tile -> call attack 
-              } else {
-                  console.log("connot go here!");
-                  elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
-                  elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
-              }
-          }  
+                    }
+                    //if child node of new parent tile enemy tile -> call attack 
+                } else {
+                    console.log("connot go here!");
+                    elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
+                    elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
+                }
+            }  
 
         } else if (elementToDrag.parentNode.parentNode.className === "piece_holder") {
           // --- Deploying pieces ---

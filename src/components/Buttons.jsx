@@ -26,7 +26,9 @@ export default function Buttons () {
     }
     function endTurn (e) {
         console.log("End turn button clicked!");
-        socket.emit("endTurn", {});
+        const element = e.target;
+        element.style.backgroundColor = "red";
+        socket.emit("endTurn", {roomId: roomId, player1: player});
     }
     function sendText (e) {
         e.preventDefault();
@@ -53,6 +55,11 @@ export default function Buttons () {
             div.innerHTML = data;
             chatText.append(div); 
         }); 
+
+        socket.on("newTurn", () => {
+            const turnButton = document.getElementById("turn_button");
+            turnButton.style.backgroundColor = 'rgb(29, 224, 15)';
+        });
 
         socket.on('End-Screen', (data) => {
             const chatText = chatTextRef.current;
