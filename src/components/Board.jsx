@@ -178,9 +178,6 @@ export default function Board(props) {
         board_matrix.push(row);
     }
 
-    // onMouseDown={e => dragStart(e)} 
-    // onMouseMove={e => _dragging(e)}
-    // onMouseUp={e => dragEnd(e)}
     return (
         <div id="board" ref={boardRef}>
             {board}

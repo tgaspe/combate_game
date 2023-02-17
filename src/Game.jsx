@@ -8,10 +8,7 @@ import Rules from "./components/Rules.js";
 import GamePlay from "./components/game.js";
 import { useEffect, useRef } from 'react';
 
-            // Todo list: 
-            // - if player move but does not want to attack: button to attack or end turn???
-            // - Players turns   
-            // - make it that you can move only your pieces and not the adv as well
+            // Todo list:   
             // - flip board for red team
             // - pieces deployement screen with timer and start game button
             // - css for lobby and waiting room
@@ -31,7 +28,7 @@ function Game() {
   let current_tile, tile_u, tile_d, tile_l, tile_r = null;
   let deploymentPhase = true;
   let pos;
-  let player;
+  let player; // true = player1; false = player2
   let turn = true;
   let room;
   let moves = 0;
@@ -74,7 +71,7 @@ function Game() {
     // Starting Game
     socket.on("gameStart", (data) => {
         deploymentPhase = false;
-        const game = new GamePlay(data.p1, data.p2, data.p1_team, data.p2_team);
+        //const game = new GamePlay(data.p1, data.p2, data.p1_team, data.p2_team);
     });
 
     // Updating Board
@@ -163,223 +160,224 @@ function Game() {
     }
 
   }
+
   // --- Move piece functions ---
   function dragStart (e) {
-      e.preventDefault() 
-      elementToDrag = e.target;
+        e.preventDefault() 
+        elementToDrag = e.target;
+        
+        if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
+            //Mouse Grab
+            const X = e.clientX -30;
+            const Y = e.clientY -30;
+            const id = elementToDrag.id;
+            const team = id.slice(0, 3);
+            current_tile = elementToDrag.parentNode;
+            pos = current_tile.id.slice(2);
 
-      if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
-
-        const id = elementToDrag.id;
-        const team = id.slice(0, 3);
-        current_tile = elementToDrag.parentNode;
-
-        console.log("turn: " + turn + " moves: " + moves);
-        if (elementToDrag.parentNode.parentNode.id === "board" && turn === true) {
-          
-            //Ligth current tile yellow
-          current_tile.style.backgroundColor = "yellow";
+            console.log("turn: " + turn + " moves: " + moves + " team: " + team + " player: " + player);
+            if (elementToDrag.parentNode.parentNode.id === "board" && turn === true && yourPiece(team, player)) {
             
-          //Light adjecent tiles
-          pos = current_tile.id.slice(2);
-          if (parseInt(pos[0]) === 0) {
-              if (parseInt(pos[1]) === 0) {        // up left corner
-                  //light tile 01 and 10 
-                  tile_d = document.getElementById("id01");
-                  tile_r = document.getElementById("id10");
+                //Ligth current tile yellow
+                current_tile.style.backgroundColor = "yellow";
+                
+            //Light adjecent tiles
+            if (parseInt(pos[0]) === 0) {
+                if (parseInt(pos[1]) === 0) {        // up left corner
+                    //light tile 01 and 10 
+                    tile_d = document.getElementById("id01");
+                    tile_r = document.getElementById("id10");
 
-                  if (tile_d.lastElementChild) {
-                      tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
-                  } else {
-                      tile_d.style.backgroundColor = '#1fd137';
-                  }
-                  if (tile_r.lastElementChild) {
-                      tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = "red";
-                  } else {
-                      tile_r.style.backgroundColor = '#1fd137';
-                  }
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_r.lastElementChild) {
+                        tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = "red";
+                    } else {
+                        tile_r.style.backgroundColor = '#1fd137';
+                    }
 
-              } else if (parseInt(pos[1]) === 9) { //down left corner
-                  //light tile 08 and 19
-                  tile_u = document.getElementById("id08");
-                  tile_r = document.getElementById("id19");
-                  if (tile_u.lastElementChild) {
-                      tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = "red";
-                  } else {
-                      tile_u.style.backgroundColor = '#1fd137';
-                  }
-                  if (tile_r.lastElementChild) {
-                      tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
-                  } else {
-                      tile_r.style.backgroundColor = '#1fd137';
-                  }
-              } else {
-                  //light up down right
-                  console.log("ligth up down right");
-                  tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-                  tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-                  tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
-                  
-                  if (tile_u.lastElementChild) {
-                      tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
-                  } else {
-                      tile_u.style.backgroundColor = '#1fd137';
-                  }
-                  if (tile_d.lastElementChild) {
-                      tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
-                  } else {
-                      tile_d.style.backgroundColor = '#1fd137';
-                  }
-                  if (tile_r.lastElementChild) {
-                      tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
-                  } else {
-                      tile_r.style.backgroundColor = '#1fd137';
-                  }
-              
-              }
-          } else if (parseInt(pos[0]) === 9) { 
-              if (parseInt(pos[1]) === 0) {        //up right corner
-                  //light tile 91 and 80
-                  tile_d = document.getElementById("id91");
-                  tile_l = document.getElementById("id80");
+                } else if (parseInt(pos[1]) === 9) { //down left corner
+                    //light tile 08 and 19
+                    tile_u = document.getElementById("id08");
+                    tile_r = document.getElementById("id19");
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = "red";
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_r.lastElementChild) {
+                        tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                    } else {
+                        tile_r.style.backgroundColor = '#1fd137';
+                    }
+                } else {
+                    //light up down right
+                    console.log("ligth up down right");
+                    tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
+                    tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
+                    tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
+                    
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_r.lastElementChild) {
+                        tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                    } else {
+                        tile_r.style.backgroundColor = '#1fd137';
+                    }
+                
+                }
+            } else if (parseInt(pos[0]) === 9) { 
+                if (parseInt(pos[1]) === 0) {        //up right corner
+                    //light tile 91 and 80
+                    tile_d = document.getElementById("id91");
+                    tile_l = document.getElementById("id80");
 
-                  if (tile_d.lastElementChild) {
-                      tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
-                  } else {
-                      tile_d.style.backgroundColor = '#1fd137';
-                  }
-                  if (tile_l.lastElementChild) {
-                      tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
-                  } else {
-                      tile_l.style.backgroundColor = '#1fd137';
-                  }
-              } else if (parseInt(pos[1]) === 9) { //down right corner
-                  //light tile 98 and 89
-                  tile_u = document.getElementById("id98");
-                  tile_l = document.getElementById("id89");
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_l.lastElementChild) {
+                        tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    } else {
+                        tile_l.style.backgroundColor = '#1fd137';
+                    }
+                } else if (parseInt(pos[1]) === 9) { //down right corner
+                    //light tile 98 and 89
+                    tile_u = document.getElementById("id98");
+                    tile_l = document.getElementById("id89");
 
-                  if (tile_u.lastElementChild) {
-                      tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
-                  } else {
-                      tile_u.style.backgroundColor = '#1fd137';
-                  } if (tile_l.lastElementChild) {
-                      tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
-                  } else {
-                      tile_l.style.backgroundColor = '#1fd137';
-                  }
-              } else {
-                  //light up down left
-                  console.log("ligth up down right");
-                  tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-                  tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-                  tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    } if (tile_l.lastElementChild) {
+                        tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    } else {
+                        tile_l.style.backgroundColor = '#1fd137';
+                    }
+                } else {
+                    //light up down left
+                    console.log("ligth up down right");
+                    tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
+                    tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
+                    tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
 
-                  if (tile_u.lastElementChild) {
-                      tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
-                  } else {
-                      tile_u.style.backgroundColor = '#1fd137';
-                  }
-                  if (tile_d.lastElementChild) {
-                      tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
-                  } else {
-                      tile_d.style.backgroundColor = '#1fd137';
-                  } 
-                  if (tile_l.lastElementChild) {
-                      tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
-                  } else {
-                      tile_l.style.backgroundColor = '#1fd137';
-                  }
-              }
-          } else if (parseInt(pos[1]) === 0) { 
-              //light down left right
-              tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-              tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-              tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
+                    if (tile_u.lastElementChild) {
+                        tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    } else {
+                        tile_u.style.backgroundColor = '#1fd137';
+                    }
+                    if (tile_d.lastElementChild) {
+                        tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    } else {
+                        tile_d.style.backgroundColor = '#1fd137';
+                    } 
+                    if (tile_l.lastElementChild) {
+                        tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    } else {
+                        tile_l.style.backgroundColor = '#1fd137';
+                    }
+                }
+            } else if (parseInt(pos[1]) === 0) { 
+                //light down left right
+                tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
+                tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
+                tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
 
-              if (tile_d.lastElementChild) {
-                  tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
-              } else {
-                  tile_d.style.backgroundColor = '#1fd137';
-              } 
-              if (tile_l.lastElementChild) {
-                  tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
-              } else {
-                  tile_l.style.backgroundColor = '#1fd137';
-              }
-              if (tile_r.lastElementChild) {
-                  tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
-              } else {
-                  tile_r.style.backgroundColor = '#1fd137';
-              }
-          } else if (parseInt(pos[1]) === 9) { 
-              //light up left right
-              tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-              tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-              tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
+                if (tile_d.lastElementChild) {
+                    tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                } else {
+                    tile_d.style.backgroundColor = '#1fd137';
+                } 
+                if (tile_l.lastElementChild) {
+                    tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                } else {
+                    tile_l.style.backgroundColor = '#1fd137';
+                }
+                if (tile_r.lastElementChild) {
+                    tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                } else {
+                    tile_r.style.backgroundColor = '#1fd137';
+                }
+            } else if (parseInt(pos[1]) === 9) { 
+                //light up left right
+                tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
+                tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
+                tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
 
-              if (tile_u.lastElementChild) {
-                  tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
-              } else {
-                  tile_u.style.backgroundColor = '#1fd137';
-              }
-              if (tile_l.lastElementChild) {
-                  tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
-              } else {
-                  tile_l.style.backgroundColor = '#1fd137';
-              }
-              if (tile_r.lastElementChild) {
-                  tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
-              } else {
-                  tile_r.style.backgroundColor = '#1fd137';
-              }
-          } else {
-              //light all 4 directions
-              tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
-              tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
-              tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
-              tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
-              
-              if (tile_u.lastElementChild) {
-                  tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
-                  if (tile_u.lastElementChild.className === "lake undefined") {tile_u.style.backgroundColor = "grey"}
-              } else {
-                  tile_u.style.backgroundColor = '#1fd137';
-              }
-              if (tile_d.lastElementChild) {
-                  tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
-                  if (tile_d.lastElementChild.className === "lake undefined") {tile_d.style.backgroundColor = "grey"}
-              } else {
-                  tile_d.style.backgroundColor = '#1fd137';
-              } 
-              if (tile_l.lastElementChild) {
-                  tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
-                  if (tile_l.lastElementChild.className === "lake undefined") {tile_l.style.backgroundColor = "grey"}
-              } else {
-                  tile_l.style.backgroundColor = '#1fd137';
-              }
-              if (tile_r.lastElementChild) {
-                  tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
-                  if (tile_r.lastElementChild.className === "lake undefined") {tile_r.style.backgroundColor = "grey"}
-              } else {
-                  tile_r.style.backgroundColor = '#1fd137';
-              }
-          } 
+                if (tile_u.lastElementChild) {
+                    tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                } else {
+                    tile_u.style.backgroundColor = '#1fd137';
+                }
+                if (tile_l.lastElementChild) {
+                    tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                } else {
+                    tile_l.style.backgroundColor = '#1fd137';
+                }
+                if (tile_r.lastElementChild) {
+                    tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                } else {
+                    tile_r.style.backgroundColor = '#1fd137';
+                }
+            } else {
+                //light all 4 directions
+                tile_u = document.getElementById("id"+pos[0]+(parseInt(pos[1])-1));
+                tile_d = document.getElementById("id"+pos[0]+(parseInt(pos[1])+1));
+                tile_l = document.getElementById("id"+(parseInt(pos[0])-1)+pos[1]);
+                tile_r = document.getElementById("id"+(parseInt(pos[0])+1)+pos[1]);
+                
+                if (tile_u.lastElementChild) {
+                    tile_u.lastElementChild.id.slice(0,3) === team ? tile_u.style.backgroundColor = "blue" : tile_u.style.backgroundColor = 'red';
+                    if (tile_u.lastElementChild.className === "lake undefined") {tile_u.style.backgroundColor = "grey"}
+                } else {
+                    tile_u.style.backgroundColor = '#1fd137';
+                }
+                if (tile_d.lastElementChild) {
+                    tile_d.lastElementChild.id.slice(0,3) === team ? tile_d.style.backgroundColor = "blue" : tile_d.style.backgroundColor = 'red';
+                    if (tile_d.lastElementChild.className === "lake undefined") {tile_d.style.backgroundColor = "grey"}
+                } else {
+                    tile_d.style.backgroundColor = '#1fd137';
+                } 
+                if (tile_l.lastElementChild) {
+                    tile_l.lastElementChild.id.slice(0,3) === team ? tile_l.style.backgroundColor = "blue" : tile_l.style.backgroundColor = 'red';
+                    if (tile_l.lastElementChild.className === "lake undefined") {tile_l.style.backgroundColor = "grey"}
+                } else {
+                    tile_l.style.backgroundColor = '#1fd137';
+                }
+                if (tile_r.lastElementChild) {
+                    tile_r.lastElementChild.id.slice(0,3) === team ? tile_r.style.backgroundColor = "blue" : tile_r.style.backgroundColor = 'red';
+                    if (tile_r.lastElementChild.className === "lake undefined") {tile_r.style.backgroundColor = "grey"}
+                } else {
+                    tile_r.style.backgroundColor = '#1fd137';
+                }
+            } 
 
-        } else if (elementToDrag.parentNode.parentNode.id === "piece_holder" && deploymentPhase === true) {
-          console.log("Deploying piece");
+            elementToDrag.style.left = `${X}px`;
+            elementToDrag.style.top = `${Y}px`;
 
-        } else {
-          console.log("error: something wrong on dragStart");
+            } else if (elementToDrag.parentNode.parentNode.className === "piece_holder" && deploymentPhase === true) {
+            console.log("Deploying piece");
+            elementToDrag.style.left = `${X}px`;
+            elementToDrag.style.top = `${Y}px`;
+
+            } else {
+            console.log("error: something wrong on dragStart");
+            elementToDrag = null;
+            }
         }
-          
-          
-          //Mouse Grab
-          const X = e.clientX -30;
-          const Y = e.clientY -30;
-          elementToDrag.style.left = `${X}px`;
-          elementToDrag.style.top = `${Y}px`;
-
-      }
       
   }
   function _dragging (e) {
@@ -433,8 +431,10 @@ function Game() {
   }
   function dragEnd (e) {
     e.preventDefault() 
-    if (elementToDrag) {        
+    if (elementToDrag) {    
+    
         const board = document.getElementById("board");
+        const endTurnButton = document.getElementById("turn_button");
         const id = elementToDrag.id;
         const team = id.slice(0, 3);
         const rank = id.slice(id.indexOf("-") + 1, id.lastIndexOf("-"));
@@ -487,11 +487,12 @@ function Game() {
                         
                         moves ++;
 
-                        if (rank === 2 && moves === 2) {
+                        if (moves === 2) {
                             // end turn 
                             console.log("soldier can only move 2 tiles max")
                             turn = false;
                             socket.emit("endTurn", {roomId: room, player1: player});
+                            endTurnButton.style.backgroundColor = "red";
                         }
                     }                 
 
@@ -511,7 +512,7 @@ function Game() {
                     const rank_adv = id_adv.slice(id_adv.indexOf("-") + 1, id_adv.lastIndexOf("-"));
                     
                     // lake tile or ally tile
-                    if (team_adv === team || parent_child.className === "lake") {
+                    if (team_adv === team || parent_child.className === "lake undefined") {
                         // Invalid move return x, y to previous place
                         console.log("cannot go here! ally or lake there!");
                         elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
@@ -537,6 +538,7 @@ function Game() {
 
                             turn = false;
                             socket.emit("endTurn", {roomId: room, player1: player});
+                            endTurnButton.style.backgroundColor = "red";
 
                         } else if (attack_result === 1) {
                             // Won
@@ -553,15 +555,16 @@ function Game() {
                                 result: "win",
                             });
                             
-                            let pieceImage = getPieceImg(id);
+                            //let pieceImage = getPieceImg(id);
                             console.log('Show your piece to the adv!');
                             //elementToDrag.style.backgroundImage = `url(${pieceImage})`;
                             // Revert back background
-                            setTimeout(() => {
-                                //elementToDrag.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
-                            }, 2000);
+                            // setTimeout(() => {
+                            //     //elementToDrag.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
+                            // }, 2000);
                             turn = false;
                             socket.emit("endTurn", {roomId: room, player1: player});
+                            endTurnButton.style.backgroundColor = "red";
 
                         } else if (attack_result === -1){
                             // Lost
@@ -586,6 +589,7 @@ function Game() {
                             
                             turn = false;
                             socket.emit("endTurn", {roomId: room, player1: player});
+                            endTurnButton.style.backgroundColor = "red";
 
                         } else { // Game Over: You Won
                             // Return piece to its position
@@ -660,7 +664,13 @@ function Game() {
           elementToDrag = null;
       }
   }
-
+  function yourPiece (team, player) {
+    if (team === "red" && player === true) {
+        return true;
+    } else if (team === "blu" && player === false) {
+        return true;
+    } else {return false}
+  }
   function getPieceImg(pieceId) {
     const img_pieces = ["./assets/images/flag.png", "./assets/images/spie.png","./assets/images/soldier.png", "./assets/images/corporal.png", 
     "./assets/images/sargent.png","./assets/images/liutenant.png", "./assets/images/captain.png", 

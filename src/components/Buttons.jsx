@@ -16,6 +16,7 @@ export default function Buttons () {
         element.style.backgroundColor = "red";
         for (let i in holders) {
             holders[i].style.visibility = "hidden";
+            // set visibility only for holder of player color
         }
         // Start Game
         socket.emit("start", {
