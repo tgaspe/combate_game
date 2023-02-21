@@ -89,8 +89,24 @@ button {
 #waiting-page {
     height: 100vh;
     width: auto;
+    padding: 40px;
     margin-right: 0;
     background-image: url("../../public/assets/images/chuck_norris.jpeg");
+    font-size: 30px;
+}
+#room-code {
+    color: rgb(253, 119, 2);
+    font-size: 30px;
+    background-color: rgba(33, 39, 33, 0.6);
+    width: 300px;
+}
+
+#copy-room {
+    position: absolute;
+    top: 190px;
+    left: auto;
+    visibility: hidden;
+    background-color: green;
 }
 
 #error-page {

@@ -10,7 +10,6 @@ import { useEffect, useRef } from 'react';
 
             // Todo list:   
             // - flip board for red team
-            // - killed pieces on the side
             // - pieces deployement screen with timer
             // - make room code bigger
             // - write game rules
