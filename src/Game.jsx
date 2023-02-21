@@ -151,34 +151,20 @@ function Game() {
     const team = piece_id.slice(0, 3);
     const rank = parseInt(piece_id.slice(piece_id.indexOf("-") + 1, piece_id.lastIndexOf("-"))); 
     const number = parseInt(piece_id.slice(piece_id.lastIndexOf("-") + 1)) - 1;
-    console.log("number: " + number);
-    const team_adv = adver_id.slice(0, 3);
-    const rank_adv = parseInt(adver_id.slice(adver_id.indexOf("-") + 1, adver_id.lastIndexOf("-")));
-    const number_adv = parseInt(adver_id.slice(adver_id.lastIndexOf("-") + 1));
     let holder;
     let tile;
 
     if (result === "tie") {
-        console.log("updateAttackResult: var: player = " + player + " team: " + team + " team_adv: " + team_adv );
 
-        if (player === true && team === "red") {
-            console.log("case 1");
-            // piece.remove();
-            // let x, y = mapPiece(team_adv, rank_adv, number_adv);
-            // holder = document.getElementById("holder-blue");
-            // let adverImage = getPieceImg(adver_id);
-            // adver.style.backgroundImage = `url(${adverImage})`;
-            // adver.style.left = `${ x *60 + holder.offsetLeft}px`;
-            // adver.style.top = `${ y *60 + holder.offsetTop}px`;
-
-        } else if (player === true && team === "blu") { // Blue receive attack
-            console.log("case 2");
-            adver.remove();
+        if (player === true && team === "blu") { // Red receive attack
+            console.log("case 1: red received attack");
+            
+            adver.remove(); //removes red piece
 
             let pos = mapPiece(team, rank, number);
             let y = pos[0];
             let x = pos[1];
-            tile = document.getElementById("is" + x + y);
+            tile = document.getElementById("is" + (x+6) + y);
             tile.appendChild(piece);
 
             holder = document.getElementById("holder-blue");
@@ -187,8 +173,9 @@ function Game() {
             piece.style.backgroundImage = `url(${pieceImage})`;
             piece.style.left = `${ x *60 + holder.offsetLeft}px`;
             piece.style.top = `${ y *60 + holder.offsetTop}px`;
-        } else if (player === false && team === "red") { // Red received attack
-            console.log("case 3");
+
+        } else if (player === false && team === "red") { // Blue received attack
+            console.log("case 2: blue received attack");
             adver.remove();
             let pos = mapPiece(team, rank, number);
             let y = pos[0];
@@ -204,15 +191,6 @@ function Game() {
             piece.style.backgroundImage = `url(${pieceImage})`;
             piece.style.left = `${ x *60 + holder.offsetLeft}px`;
             piece.style.top = `${ y *60 + holder.offsetTop}px`;
-        } else if (player === false && team === "blu") {
-            console.log("case 4");
-            // piece.remove();
-            // let x, y = mapPiece(team_adv, rank_adv, number_adv);
-            // holder = document.getElementById("holder-blue");
-            // let adverImage = getPieceImg(adver_id);
-            // adver.style.backgroundImage = `url(${adverImage})`;
-            // adver.style.left = `${ x *60 + holder.offsetLeft}px`;
-            // adver.style.top = `${ y *60 + holder.offsetTop}px`;
         } else {
             console.log("some error occured in update piece positions in tie");
             piece.remove();
