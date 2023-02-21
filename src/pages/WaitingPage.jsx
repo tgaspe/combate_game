@@ -1,6 +1,7 @@
 import { React, useEffect, useRef } from "react";
 import {socket} from "../Game.jsx";
 import { useNavigate } from "react-router-dom";
+import "./pages.css";
 
 function WaitingPage() {
     

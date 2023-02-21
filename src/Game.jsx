@@ -10,8 +10,10 @@ import { useEffect, useRef } from 'react';
 
             // Todo list:   
             // - flip board for red team
-            // - pieces deployement screen with timer and start game button
-            // - css for lobby and waiting room
+            // - killed pieces on the side
+            // - pieces deployement screen with timer
+            // - make room code bigger
+            // - write game rules
             // - Deploy Game on a real website
             // - Create AI for single player
 
@@ -70,8 +72,17 @@ function Game() {
 
     // Starting Game
     socket.on("gameStart", (data) => {
+        console.log("game start received")
         deploymentPhase = false;
-        //const game = new GamePlay(data.p1, data.p2, data.p1_team, data.p2_team);
+        player ? turn = true : turn = false;
+        
+        // if (data.player1 === true) {
+
+        // } else if (data.player1 === false) {
+
+        // } else {
+        //     console.log(data.player1 + " variable is undefined")
+        // }
     });
 
     // Updating Board
@@ -137,11 +148,77 @@ function Game() {
     //const board = document.getElementById("board");
     const piece = document.getElementById(piece_id);
     const adver = document.getElementById(adver_id);
+    const team = piece_id.slice(0, 3);
+    const rank = parseInt(piece_id.slice(piece_id.indexOf("-") + 1, piece_id.lastIndexOf("-"))); 
+    const number = parseInt(piece_id.slice(piece_id.lastIndexOf("-") + 1)) - 1;
+    console.log("number: " + number);
+    const team_adv = adver_id.slice(0, 3);
+    const rank_adv = parseInt(adver_id.slice(adver_id.indexOf("-") + 1, adver_id.lastIndexOf("-")));
+    const number_adv = parseInt(adver_id.slice(adver_id.lastIndexOf("-") + 1));
+    let holder;
+    let tile;
 
     if (result === "tie") {
-        console.log("tieee");
-        piece.remove();
-        adver.remove();
+        console.log("updateAttackResult: var: player = " + player + " team: " + team + " team_adv: " + team_adv );
+
+        if (player === true && team === "red") {
+            console.log("case 1");
+            // piece.remove();
+            // let x, y = mapPiece(team_adv, rank_adv, number_adv);
+            // holder = document.getElementById("holder-blue");
+            // let adverImage = getPieceImg(adver_id);
+            // adver.style.backgroundImage = `url(${adverImage})`;
+            // adver.style.left = `${ x *60 + holder.offsetLeft}px`;
+            // adver.style.top = `${ y *60 + holder.offsetTop}px`;
+
+        } else if (player === true && team === "blu") { // Blue receive attack
+            console.log("case 2");
+            adver.remove();
+
+            let pos = mapPiece(team, rank, number);
+            let y = pos[0];
+            let x = pos[1];
+            tile = document.getElementById("is" + x + y);
+            tile.appendChild(piece);
+
+            holder = document.getElementById("holder-blue");
+            
+            let pieceImage = getPieceImg(piece_id);
+            piece.style.backgroundImage = `url(${pieceImage})`;
+            piece.style.left = `${ x *60 + holder.offsetLeft}px`;
+            piece.style.top = `${ y *60 + holder.offsetTop}px`;
+        } else if (player === false && team === "red") { // Red received attack
+            console.log("case 3");
+            adver.remove();
+            let pos = mapPiece(team, rank, number);
+            let y = pos[0];
+            let x = pos[1];
+            console.log("x: " + x + " y: " + y);
+
+            tile = document.getElementById("is" + x + y);
+            tile.appendChild(piece);
+
+            holder = document.getElementById("holder-red");
+            
+            let pieceImage = getPieceImg(piece_id);
+            piece.style.backgroundImage = `url(${pieceImage})`;
+            piece.style.left = `${ x *60 + holder.offsetLeft}px`;
+            piece.style.top = `${ y *60 + holder.offsetTop}px`;
+        } else if (player === false && team === "blu") {
+            console.log("case 4");
+            // piece.remove();
+            // let x, y = mapPiece(team_adv, rank_adv, number_adv);
+            // holder = document.getElementById("holder-blue");
+            // let adverImage = getPieceImg(adver_id);
+            // adver.style.backgroundImage = `url(${adverImage})`;
+            // adver.style.left = `${ x *60 + holder.offsetLeft}px`;
+            // adver.style.top = `${ y *60 + holder.offsetTop}px`;
+        } else {
+            console.log("some error occured in update piece positions in tie");
+            piece.remove();
+            adver.remove();
+        }
+        
     } else if (result === "win") {
         
         console.log("winn");
@@ -155,15 +232,42 @@ function Game() {
         }, 2000);
 
     } else {
-        console.log("tieee");
-        piece.remove();
+        console.log("loss");
+        //piece.remove();
+        if (player === true && team === "blu") { // Red player received attack from blue
+            console.log("case 2");
+            let pos = mapPiece(team, rank, number);
+            let y = pos[0];
+            let x = pos[1];
+            console.log("x: " + x + " y: " + y);
+            tile = document.getElementById("is" + (x+6) + y);
+            tile.appendChild(piece);
+            holder = document.getElementById("holder-blue");
+            let pieceImage = getPieceImg(piece_id);
+            piece.style.backgroundImage = `url(${pieceImage})`;
+            piece.style.left = `${ x *60 + holder.offsetLeft}px`;
+            piece.style.top = `${ y *60 + holder.offsetTop}px`;
+        } else if (player === false && team === "red") { // Blue player received attack from red
+            console.log("case 3");
+            let pos = mapPiece(team, rank, number);
+            let y = pos[0];
+            let x = pos[1];
+            console.log("x: " + x + " y: " + y);
+            tile = document.getElementById("is" + x + y);
+            tile.appendChild(piece);
+            holder = document.getElementById("holder-red");
+            let pieceImage = getPieceImg(piece_id);
+            piece.style.backgroundImage = `url(${pieceImage})`;
+            piece.style.left = `${ x *60 + holder.offsetLeft}px`;
+            piece.style.top = `${ y *60 + holder.offsetTop}px`;
+        }
     }
 
   }
 
   // --- Move piece functions ---
   function dragStart (e) {
-        e.preventDefault() 
+        //e.preventDefault() 
         elementToDrag = e.target;
         
         if (elementToDrag && elementToDrag.classList.contains("game_piece")) {
@@ -509,7 +613,8 @@ function Game() {
                     const parent_child = new_parent_tile.lastElementChild;
                     const id_adv = parent_child.id;
                     const team_adv = id_adv.slice(0, 3);
-                    const rank_adv = id_adv.slice(id_adv.indexOf("-") + 1, id_adv.lastIndexOf("-"));
+                    const rank_adv = parseInt(id_adv.slice(id_adv.indexOf("-") + 1, id_adv.lastIndexOf("-")));
+                    const number_adv = parseInt(id_adv.slice(id_adv.lastIndexOf("-") + 1)) - 1;
                     
                     // lake tile or ally tile
                     if (team_adv === team || parent_child.className === "lake undefined") {
@@ -521,12 +626,35 @@ function Game() {
                         console.log("attack command!");
                         
                         let attack_result = rules.attack(parseInt(rank), parseInt(rank_adv));
+                        let holder;
+                        let tile;
 
                         if (attack_result === 0) {
                             // Tie
                             elementToDrag.remove();
-                            parent_child.remove();
                             
+                            //parent_child.remove();
+                            let posi = mapPiece(team_adv, rank_adv, number_adv);
+                            let y = posi[0];
+                            let x = posi[1];
+                            console.log("x: " + x + " y: " + y);
+                            
+                            
+                            
+                            if (player) {
+                                holder = document.getElementById("holder-blue")
+                                tile = document.getElementById("is" + (x+6) + y);
+                            } else {
+                                holder = document.getElementById("holder-red");
+                                tile = document.getElementById("is" + x + y);
+                            }
+                            tile.appendChild(parent_child);
+                            let pieceImage = getPieceImg(id_adv);
+                            parent_child.style.backgroundImage = `url(${pieceImage})`;
+                            parent_child.style.left = `${ x *60 + holder.offsetLeft}px`;
+                            parent_child.style.top = `${ y *60 + holder.offsetTop}px`;
+
+
                             socket.emit("attack", {
                                 roomId: room,
                                 player1: player,
@@ -544,8 +672,28 @@ function Game() {
                             // Won
                             elementToDrag.style.left = `${parseInt(pos[0])*60 + board.offsetLeft}px`;
                             elementToDrag.style.top = `${parseInt(pos[1])*60 + board.offsetTop}px`;
-                            parent_child.remove();
                             
+                            //parent_child.remove();
+                            let posi = mapPiece(team_adv, rank_adv, number_adv);
+                            let y = posi[0];
+                            let x = posi[1];
+                            console.log("x: " + x + " y: " + y);
+                            
+                            if (player) {
+                                holder = document.getElementById("holder-blue")
+                                tile = document.getElementById("is" + (x+6) + y);
+                            } else {
+                                holder = document.getElementById("holder-red");
+                                tile = document.getElementById("is" + x + y);
+                            }
+                            
+                            tile.appendChild(parent_child);
+                            
+                            let pieceImage = getPieceImg(id_adv);
+                            parent_child.style.backgroundImage = `url(${pieceImage})`;
+                            parent_child.style.left = `${ x *60 + holder.offsetLeft}px`;
+                            parent_child.style.top = `${ y *60 + holder.offsetTop}px`;
+
                             socket.emit("attack", {
                                 roomId: room,
                                 player1: player,
@@ -557,11 +705,6 @@ function Game() {
                             
                             //let pieceImage = getPieceImg(id);
                             console.log('Show your piece to the adv!');
-                            //elementToDrag.style.backgroundImage = `url(${pieceImage})`;
-                            // Revert back background
-                            // setTimeout(() => {
-                            //     //elementToDrag.style.backgroundImage = "url(./assets/images/enemy_icon.png)";
-                            // }, 2000);
                             turn = false;
                             socket.emit("endTurn", {roomId: room, player1: player});
                             endTurnButton.style.backgroundColor = "red";
@@ -679,6 +822,90 @@ function Game() {
     
     let index = pieceId.slice(pieceId.indexOf("-") + 1, pieceId.lastIndexOf("-"));
     return img_pieces[index];
+  }
+  function mapPiece(team, rank, i) {
+    
+    if (rank == 0) { //Flag
+        if (team === "red") {
+            return [0,0];
+        } else if (team === "blu") {
+            return [0,3];
+        }
+    } else if (rank == 1) { //Spie
+        if (team === "red") {
+            return [1,0];
+        } else if (team === "blu") {
+            return [1,3];
+        }
+    } else if (rank == 2) { //Soldier
+        if (team === "red") {
+            return [2+i,0];
+        } else if (team === "blu") {
+            return [2+i,3];
+        }   
+    } else if (rank == 3) { //Corporal
+        if (team === "red") {
+            return [i,1];
+        } else if (team === "blu") {
+            return [i,2];
+        }
+    } else if (rank == 4 ) { //Sargent
+        if (team === "red") {
+            return [5+i,1];
+        } else if (team === "blu") {
+            return [5+i,2];
+        }   
+    } else if (rank == 5 ) { //BlueTenent 
+        if (i == 0) {
+            if (team === "red") {
+                return [9,1];
+            } else if (team === "blu") {
+                return [9,2];
+            }
+        } else {
+            if (team === "red") {
+                return [i-1,2];
+            } else if (team === "blu") {
+                return [i-1,1];
+            }
+        }        
+    } else if (rank == 6 ) { //Captain
+        if (team === "red") {
+            return [i+3,2];
+        } else if (team === "blu") {
+            return [i+3,1];
+        }    
+    } else if (rank == 7) { //Major
+        if (team === "red") {
+            return [7+i,2];
+        } else if (team === "blu") {
+            return [7+i,1];
+        }   
+    } else if (rank == 8) { //Colonel
+        if (team === "red") {
+            return [i,3];
+        } else if (team === "blu") {
+            return [i,0];
+        }         
+    } else if (rank == 9) { //General
+        if (team === "red") {
+            return [2,3];
+        } else if (team === "blu") {
+            return [2,0];
+        }
+    } else if (rank == 10) { //5 Star General
+        if (team === "red") {
+            return [3,3];
+        } else if (team === "blu") {
+            return [3,0];
+        }
+    } else if (rank == 11) { //Bomb
+        if (team === "red") {
+            return [4+i,3];
+        } else if (team === "blu") {
+            return [4+i,0];
+        }   
+    } 
   }
 
   return (

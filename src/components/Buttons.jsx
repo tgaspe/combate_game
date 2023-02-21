@@ -14,14 +14,21 @@ export default function Buttons () {
         const element = e.target;
         const holders = document.getElementsByClassName("piece_holder");
         element.style.backgroundColor = "red";
-        for (let i in holders) {
-            holders[i].style.visibility = "hidden";
-            // set visibility only for holder of player color
+        // set visibility only for holder of player color
+        if (player === true) {
+            holders[0].style.display = "none";
+            holders[1].style.display = "grid";
+        } else if (player === false) {
+            holders[0].style.display = "grid";
+            holders[1].style.display = "none";
+        } else {
+            console.log("player is undefined");
         }
         // Start Game
         socket.emit("start", {
             //implement here
             room: roomId,
+            player1: player
         });
 
     }

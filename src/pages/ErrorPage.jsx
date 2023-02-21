@@ -1,9 +1,11 @@
 import React from "react";
-
+import "./pages.css";
 
 const Error = () => {
   return (
-    <div>Error: Page not Found</div>
+    <div id="error-page">
+      <div id="error-msg">Error: Room not Found!</div>
+    </div>
   );
 };
 
