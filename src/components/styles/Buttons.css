@@ -37,9 +37,25 @@
 }
 
 .red {
+    display: inline;
+    font-size: 16px;
     color: red;
+    margin: 0px;
+    width: 40px;
+}
+
+.red p {
+    display: inline;
 }
 
 .blue {
+    display: inline;
+    font-size: 16px;
     color: blue;
+    margin: 0px;
+    width: 40px;
+}
+
+.blue p {
+    display: inline;
 }

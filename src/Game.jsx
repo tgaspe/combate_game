@@ -14,7 +14,8 @@ import { useEffect, useRef } from 'react';
             // - Create AI for single player
 
 // Connection to server
-export const socket = io("https://combategame1998.herokuapp.com");
+//export const socket = io("https://combategame1998.herokuapp.com");
+export const socket = io("http://localhost:2000");
 
 
 function Game() {
