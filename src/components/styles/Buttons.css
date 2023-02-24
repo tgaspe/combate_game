@@ -16,20 +16,30 @@
 }
 
 #chat_box {
-
-    height: 84%;
+    border-radius: 6px;
+    padding: 3px;
+    margin-bottom: 6px;
+    margin-top: 3px;
+    height: 400px;
     width: 100%;
     background-color: rgb(243, 231, 231);
-    padding: 3px;
     overflow-y: scroll;
 }
 
 #chat_form {
-    width: 100%;
+    width: 197px;
 }
 
 #chat_input {
     width: 100%;
     padding: 2px;
     border: 0
+}
+
+.red {
+    color: red;
+}
+
+.blue {
+    color: blue;
 }

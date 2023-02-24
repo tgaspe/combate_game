@@ -18,7 +18,7 @@ function WaitingPage() {
             button.style.visibility = "visible";
             room = data.room;
             div.setAttribute("id", "room-code");
-            div.innerHTML = "Please share this code: " + room;
+            div.innerHTML = room;
             console.log("wating for oppenent to join, please share this code: " + room);
             waitingDiv.append(div);
           });
@@ -46,7 +46,7 @@ function WaitingPage() {
     function copyRoom(e) {
         console.log("button cliked!");
         const button = e.target;
-        button.innerHTML = "copied!";
+        button.innerHTML = "Copied!";
         button.style.backgroundColor = "red";
         navigator.clipboard.writeText(room);
 
@@ -54,7 +54,7 @@ function WaitingPage() {
 
     return (
         <div id='waiting-page' ref={waitingRef}>
-            <div>Wating for opponent to join ...</div>
+            <div id="waiting-text" ><p>Wating for opponent to join ...<br></br>Please share this code:</p></div>
             <button id="copy-room" onClick={e => copyRoom(e)}>Copy Room</button>
         </div>
         

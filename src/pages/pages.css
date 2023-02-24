@@ -94,17 +94,29 @@ button {
     background-image: url("../../public/assets/images/chuck_norris.jpeg");
     font-size: 30px;
 }
+
+#waiting-text {
+    color: rgb(253, 119, 2);
+    background-color: rgba(33, 39, 33, 0.6);
+    width: 380px;
+    
+}
+
+p {
+    margin: 0;
+}
+
 #room-code {
     color: rgb(253, 119, 2);
     font-size: 30px;
     background-color: rgba(33, 39, 33, 0.6);
-    width: 300px;
+    width: 140px;
 }
 
 #copy-room {
     position: absolute;
-    top: 190px;
-    left: auto;
+    top: 150px;
+    left: 190px;
     visibility: hidden;
     background-color: green;
 }

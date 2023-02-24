@@ -54,6 +54,10 @@ export default function Buttons () {
             console.log(data);
             roomId = data.room;
             player = data.player1;
+            if (player === false) {
+                let turn_btn = document.getElementById("turn_button");
+                turn_btn.style.backgroundColor = "red";
+            }
         });
 
         socket.on("addToChat", (data) => {
