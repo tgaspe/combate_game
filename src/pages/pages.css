@@ -7,7 +7,7 @@
 }
 
 nav {
-    background-color:rgb(2, 60, 3);;
+    background-color:rgb(66, 82, 66);
     padding: 5px;
     height: 35px;
     font-size: 20px;
@@ -15,23 +15,32 @@ nav {
 }
 
 a {
-    color: black;
+    color: rgb(2, 0, 0);
     text-decoration: none;
     margin-left: 15px;
 }
 
 h1 {
+    color: rgb(255, 119, 0);
     margin: 0;
 }
 
 p {
     color: rgb(227, 220, 220);
+    margin-bottom: 5px;
+}
+
+li {
+    color: rgb(227, 220, 220);
+    list-style-type: square;
 }
 #lobby {
-    height: 100vh;
+    height: auto;
     width: auto;
     margin-right: 0;
     background-image: url("../../public/assets/images/chuck_norris.jpeg");
+    background-attachment: fixed;
+    /*overflow: hidden;*/
 
 }
 #rules {
@@ -39,15 +48,33 @@ p {
     padding: 20px;
     padding-top: 50px;
     width: 700px;
-    height: 100%;
+    /*overflow-y: scroll;*/
+}
+
+h2 {
+    color: rgb(253, 119, 2);
+}
+h3 {
+    color: rgb(253, 119, 2);
 }
 #rules h1 {
     font-size: 45px;
-    color: rgb(222, 0, 0);
+    color: rgb(244, 225, 13);
     width: 400px;
     text-align: center;
     border: dashed black 4px;
     margin-bottom: 20px;
+}
+.rank {
+    display: flex;
+}
+.rank h3 {
+    margin: 0px;
+    color: rgb(253, 119, 2);
+}
+.pics-ranks {
+    height: 100px;
+    width: 85px;
 }
 
 #lobby-buttons {
@@ -55,7 +82,7 @@ p {
     background-color: rgba(33, 39, 33, 0.8);
     padding: 20px;
     width: 350px;
-    position: absolute;
+    position: fixed;
     top: 30%;
     right: 8%;
     margin: auto;

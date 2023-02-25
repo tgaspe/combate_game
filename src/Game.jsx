@@ -10,12 +10,13 @@ import { useEffect, useRef } from 'react';
             // Todo list:   
             // - flip board for red team
             // - pieces deployement screen with timer
-            // - write game rules
+            // - be able to relocate pieces on deployment 
+            // and not move them above the paralel before game start
             // - Create AI for single player
 
 // Connection to server
-//export const socket = io("https://combategame1998.herokuapp.com");
-export const socket = io("http://localhost:2000");
+export const socket = io("https://combategame1998.herokuapp.com");
+//export const socket = io("http://localhost:2000");
 
 
 function Game() {
