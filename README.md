@@ -30,11 +30,11 @@ and the corporal and a bomb, bombs kill any piece that dares to attack it, with 
 
 Ranks:
 
-1 - spy; 
+1 - spy (can kill 5 star general); 
 
-2 - soldier;
+2 - soldier (can move two tiles);
 
-3 - corporal;
+3 - corporal (can disarm bombs);
 
 4 - sargent;
 
