@@ -29,14 +29,24 @@ The two exceptions to the rule are: the spy that has a rank of one but when in c
 and the corporal and a bomb, bombs kill any piece that dares to attack it, with the exception of the corporal who can disarm it.
 
 Ranks:
+
 1 - spy; 
+
 2 - soldier;
+
 3 - corporal;
+
 4 - sargent;
+
 5 - tenant;
+
 6 - captain;
+
 7 - major;
+
 8 - colonel;
+
 9 - general;
+
 10 - 5 star general;
 
